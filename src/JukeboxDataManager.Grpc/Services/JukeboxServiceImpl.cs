@@ -136,11 +136,18 @@ public class JukeboxServiceImpl : JukeboxService.JukeboxServiceBase
 
     public override async Task<AlbumResponse> CreateAlbum(CreateAlbumRequest request, ServerCallContext context)
     {
+        DateTime? releaseDate = null;
+        if (!string.IsNullOrEmpty(request.ReleaseDate))
+        {
+            if (!DateTime.TryParse(request.ReleaseDate, out var parsed))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"Invalid release_date format: '{request.ReleaseDate}'"));
+            releaseDate = parsed;
+        }
         var album = new Album
         {
             Title = request.Title,
             ArtistId = request.ArtistId,
-            ReleaseDate = string.IsNullOrEmpty(request.ReleaseDate) ? null : DateTime.Parse(request.ReleaseDate),
+            ReleaseDate = releaseDate,
             CreatedAt = DateTime.UtcNow
         };
         _context.Albums.Add(album);
@@ -154,7 +161,16 @@ public class JukeboxServiceImpl : JukeboxService.JukeboxServiceBase
             ?? throw new RpcException(new Status(StatusCode.NotFound, $"Album {request.Id} not found"));
         album.Title = request.Title;
         album.ArtistId = request.ArtistId;
-        album.ReleaseDate = string.IsNullOrEmpty(request.ReleaseDate) ? null : DateTime.Parse(request.ReleaseDate);
+        if (!string.IsNullOrEmpty(request.ReleaseDate))
+        {
+            if (!DateTime.TryParse(request.ReleaseDate, out var parsed))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"Invalid release_date format: '{request.ReleaseDate}'"));
+            album.ReleaseDate = parsed;
+        }
+        else
+        {
+            album.ReleaseDate = null;
+        }
         await _context.SaveChangesAsync();
         return MapAlbum(album);
     }
