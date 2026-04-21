@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/JukeboxDataManager.Data/JukeboxDataManager.Data.csproj" />
+    <Project Path="src/JukeboxDataManager.Grpc/JukeboxDataManager.Grpc.csproj" />
+    <Project Path="src/JukeboxDataManager.Rest/JukeboxDataManager.Rest.csproj" />
+  </Folder>
+</Solution>
