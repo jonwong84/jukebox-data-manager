@@ -43,13 +43,11 @@ public class ArtistsController : ControllerBase
     public async Task<IActionResult> UpdateArtist(int id, Artist artist)
     {
         if (id != artist.Id) return BadRequest();
-        _context.Entry(artist).State = EntityState.Modified;
-        try { await _context.SaveChangesAsync(); }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Artists.Any(a => a.Id == id)) return NotFound();
-            throw;
-        }
+        var existing = await _context.Artists.FindAsync(id);
+        if (existing == null) return NotFound();
+        existing.Name = artist.Name;
+        existing.Bio = artist.Bio;
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
