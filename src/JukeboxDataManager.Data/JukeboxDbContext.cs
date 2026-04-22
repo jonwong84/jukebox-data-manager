@@ -1,0 +1,59 @@
+using JukeboxDataManager.Data.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace JukeboxDataManager.Data;
+
+public class JukeboxDbContext : DbContext
+{
+    public JukeboxDbContext(DbContextOptions<JukeboxDbContext> options) : base(options) { }
+
+    public DbSet<Song> Songs => Set<Song>();
+    public DbSet<Artist> Artists => Set<Artist>();
+    public DbSet<Album> Albums => Set<Album>();
+    public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<SongGenre> SongGenres => Set<SongGenre>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Artist>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+            entity.Property(a => a.Name).IsRequired().HasMaxLength(200);
+            entity.Property(a => a.Bio).HasMaxLength(2000);
+            entity.HasMany(a => a.Songs).WithOne(s => s.Artist).HasForeignKey(s => s.ArtistId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasMany(a => a.Albums).WithOne(al => al.Artist).HasForeignKey(al => al.ArtistId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Album>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+            entity.Property(a => a.Title).IsRequired().HasMaxLength(200);
+            entity.HasMany(a => a.Songs).WithOne(s => s.Album).HasForeignKey(s => s.AlbumId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Song>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Title).IsRequired().HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<Genre>(entity =>
+        {
+            entity.HasKey(g => g.Id);
+            entity.Property(g => g.Name).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<SongGenre>(entity =>
+        {
+            entity.HasKey(sg => new { sg.SongId, sg.GenreId });
+            entity.HasOne(sg => sg.Song)
+                  .WithMany(s => s.SongGenres)
+                  .HasForeignKey(sg => sg.SongId);
+            entity.HasOne(sg => sg.Genre)
+                  .WithMany(g => g.SongGenres)
+                  .HasForeignKey(sg => sg.GenreId);
+        });
+    }
+}

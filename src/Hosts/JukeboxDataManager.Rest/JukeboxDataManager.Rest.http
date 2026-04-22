@@ -1,0 +1,16 @@
+@JukeboxDataManager.Rest_HostAddress = http://localhost:5035
+
+GET {{JukeboxDataManager.Rest_HostAddress}}/api/songs
+Accept: application/json
+
+###
+
+GET {{JukeboxDataManager.Rest_HostAddress}}/api/artists
+Accept: application/json
+
+###
+
+GET {{JukeboxDataManager.Rest_HostAddress}}/api/albums
+Accept: application/json
+
+###
