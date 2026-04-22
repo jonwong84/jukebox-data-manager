@@ -10,6 +10,8 @@ public class JukeboxDbContext : DbContext
     public DbSet<Song> Songs => Set<Song>();
     public DbSet<Artist> Artists => Set<Artist>();
     public DbSet<Album> Albums => Set<Album>();
+    public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<SongGenre> SongGenres => Set<SongGenre>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,7 +37,23 @@ public class JukeboxDbContext : DbContext
         {
             entity.HasKey(s => s.Id);
             entity.Property(s => s.Title).IsRequired().HasMaxLength(200);
-            entity.Property(s => s.Genre).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Genre>(entity =>
+        {
+            entity.HasKey(g => g.Id);
+            entity.Property(g => g.Name).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<SongGenre>(entity =>
+        {
+            entity.HasKey(sg => new { sg.SongId, sg.GenreId });
+            entity.HasOne(sg => sg.Song)
+                  .WithMany(s => s.SongGenres)
+                  .HasForeignKey(sg => sg.SongId);
+            entity.HasOne(sg => sg.Genre)
+                  .WithMany(g => g.SongGenres)
+                  .HasForeignKey(sg => sg.GenreId);
         });
     }
 }

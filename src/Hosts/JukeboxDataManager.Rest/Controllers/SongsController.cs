@@ -1,37 +1,48 @@
-using JukeboxDataManager.Data;
-using JukeboxDataManager.Data.Models;
+using JukeboxDataManager.Data.Managers;
+using JukeboxDataManager.Rest.Models.Songs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace JukeboxDataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+
 public class SongsController : ControllerBase
 {
-    private readonly JukeboxDbContext _context;
+    private readonly ISongManager _songManager;
 
-    public SongsController(JukeboxDbContext context)
+    public SongsController(ISongManager songManager)
     {
-        _context = context;
+        _songManager = songManager;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Song>>> GetSongs()
+    [HttpPost("search")]
+    public async Task<ActionResult<SongSearchResponse>> SearchSongs([FromBody] SongSearchRequest request)
     {
-        return await _context.Songs.Include(s => s.Artist).Include(s => s.Album).ToListAsync();
+        var response = await _songManager.SearchSongsAsync(request);
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Song>> GetSong(int id)
+    public async Task<ActionResult<SongSummary>> GetSong(int id)
     {
-        var song = await _context.Songs.Include(s => s.Artist).Include(s => s.Album).FirstOrDefaultAsync(s => s.Id == id);
+        // TODO: Replace with manager/data access call
+        var song = await _songManager.FindByIdAsync(id);
         if (song == null) return NotFound();
-        return song;
+        var summary = new SongSummary
+        {
+            Id = song.Id,
+            Title = song.Title,
+            ArtistId = song.ArtistId,
+            AlbumId = song.AlbumId,
+            Duration = song.Duration
+        };
+        return summary;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Song>> CreateSong(Song song)
+    public async Task<ActionResult<Song>> AddSong(Song song)
     {
         song.CreatedAt = DateTime.UtcNow;
         _context.Songs.Add(song);
