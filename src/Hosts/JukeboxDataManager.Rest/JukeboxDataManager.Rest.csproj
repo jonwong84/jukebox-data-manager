@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\JukeboxDataManager.Data\JukeboxDataManager.Data.csproj" />
+    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Contracts\JukeboxDataManager.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

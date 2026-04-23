@@ -1,6 +1,6 @@
-using JukeboxDataManager.Rest.Models;
+using JukeboxDataManager.Contracts.SongSummary;
 
-namespace JukeboxDataManager.Data.Managers;
+namespace JukeboxDataManager.Contracts;
 
 public interface ISongManager
 {

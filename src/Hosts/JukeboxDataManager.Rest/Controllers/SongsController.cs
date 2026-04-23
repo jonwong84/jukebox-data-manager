@@ -1,5 +1,6 @@
-using JukeboxDataManager.Data.Managers;
-using JukeboxDataManager.Rest.Models.Songs;
+
+using JukeboxDataManager.Contracts;
+using JukeboxDataManager.Contracts.SongSummary;
 using Microsoft.AspNetCore.Mvc;
 
 

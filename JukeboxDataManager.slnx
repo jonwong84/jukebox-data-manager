@@ -1,14 +1,14 @@
 <Solution>
   <Folder Name="/src/" />
   <Folder Name="/src/Data/">
-    <Project Path="src/JukeboxDataManager.Data/JukeboxDataManager.Data.csproj" />
+    <Project Path="src/Data/JukeboxDataManager.Data/JukeboxDataManager.Data.csproj" />
   </Folder>
   <Folder Name="/src/Host/">
     <Project Path="src/Hosts/JukeboxDataManager.Grpc/JukeboxDataManager.Grpc.csproj" />
     <Project Path="src/Hosts/JukeboxDataManager.Rest/JukeboxDataManager.Rest.csproj" />
   </Folder>
   <Folder Name="/src/Manager/">
-    <Project Path="JukeboxDataManager.Contracts/JukeboxDataManager.Contracts.csproj" Id="29ff95e5-a6ab-4165-9b07-f60d10ae098b" />
-    <Project Path="src/JukeboxDataManager.Managers/JukeboxDataManager.Managers.csproj" />
+    <Project Path="src/Manager/JukeboxDataManager.Contracts/JukeboxDataManager.Contracts.csproj" />
+    <Project Path="src/Manager/JukeboxDataManager.Managers/JukeboxDataManager.Managers.csproj" />
   </Folder>
 </Solution>

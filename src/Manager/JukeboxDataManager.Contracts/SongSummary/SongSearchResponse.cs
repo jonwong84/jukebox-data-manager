@@ -1,4 +1,4 @@
-namespace JukeboxDataManager.Rest.Models.Songs;
+namespace JukeboxDataManager.Contracts.SongSummary;
 
 public class SongSearchResponse
 {

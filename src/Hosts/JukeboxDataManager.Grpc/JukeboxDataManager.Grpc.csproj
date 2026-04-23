@@ -15,8 +15,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.14" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../../JukeboxDataManager.Data/JukeboxDataManager.Data.csproj" />
-  </ItemGroup>
-
 </Project>
