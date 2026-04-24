@@ -12,4 +12,6 @@ public class Song
     public ICollection<SongGenre> SongGenres { get; set; } = new List<SongGenre>();
     public int? TrackNumber { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public SongLyrics? Lyrics { get; set; }
 }

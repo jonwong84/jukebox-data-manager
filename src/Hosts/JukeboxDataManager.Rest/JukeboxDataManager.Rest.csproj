@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Manager\JukeboxDataManager.Contracts\JukeboxDataManager.Contracts.csproj" />
+    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Managers\JukeboxDataManager.Managers.csproj" />
   </ItemGroup>
 
 </Project>

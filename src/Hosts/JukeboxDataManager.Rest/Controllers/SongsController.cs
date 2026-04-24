@@ -1,6 +1,5 @@
-
 using JukeboxDataManager.Contracts;
-using JukeboxDataManager.Contracts.SongSummary;
+using JukeboxDataManager.Contracts.Song;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -28,52 +27,36 @@ public class SongsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<SongSummary>> GetSong(int id)
     {
-        // TODO: Replace with manager/data access call
-        var song = await _songManager.FindByIdAsync(id);
+        var song = await _songManager.FindByIdAsync(id); // song should be of type Song
         if (song == null) return NotFound();
         var summary = new SongSummary
         {
             Id = song.Id,
             Title = song.Title,
-            ArtistId = song.ArtistId,
-            AlbumId = song.AlbumId,
-            Duration = song.Duration
+            Artist = song.Artist,
+            Album = song.Album,
+            Duration = song.Duration,
+            Lyrics = song.Lyrics
         };
         return summary;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Song>> AddSong(Song song)
+    public async Task<ActionResult<SongSummary>> AddSong(AddSongRequest request)
     {
-        song.CreatedAt = DateTime.UtcNow;
-        _context.Songs.Add(song);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetSong), new { id = song.Id }, song);
+        var summary = await _songManager.AddSongAsync(request);
+        return CreatedAtAction(nameof(GetSong), new { id = summary.Id }, summary);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSong(int id, Song song)
+    public async Task<IActionResult> UpdateSong(UpdateSongRequest request)
     {
-        if (id != song.Id) return BadRequest();
-        var existing = await _context.Songs.FindAsync(id);
-        if (existing == null) return NotFound();
-        existing.Title = song.Title;
-        existing.ArtistId = song.ArtistId;
-        existing.AlbumId = song.AlbumId;
-        existing.Duration = song.Duration;
-        existing.Genre = song.Genre;
-        existing.TrackNumber = song.TrackNumber;
-        await _context.SaveChangesAsync();
-        return NoContent();
+        throw new NotImplementedException("UpdateSong is not implemented yet.");
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSong(int id)
     {
-        var song = await _context.Songs.FindAsync(id);
-        if (song == null) return NotFound();
-        _context.Songs.Remove(song);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        throw new NotImplementedException("DeleteSong is not implemented yet.");
     }
 }

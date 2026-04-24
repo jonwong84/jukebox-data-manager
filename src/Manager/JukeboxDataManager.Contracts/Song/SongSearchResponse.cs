@@ -1,4 +1,4 @@
-namespace JukeboxDataManager.Contracts.SongSummary;
+namespace JukeboxDataManager.Contracts.Song;
 
 public class SongSearchResponse
 {

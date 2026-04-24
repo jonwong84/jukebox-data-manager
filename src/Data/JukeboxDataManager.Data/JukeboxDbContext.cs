@@ -7,7 +7,9 @@ public class JukeboxDbContext : DbContext
 {
     public JukeboxDbContext(DbContextOptions<JukeboxDbContext> options) : base(options) { }
 
-    public DbSet<Song> Songs => Set<Song>();
+     public DbSet<Song> Songs => Set<Song>();
+     public DbSet<SongLyrics> SongLyrics => Set<SongLyrics>();
+     public DbSet<AlbumDescription> AlbumDescriptions => Set<AlbumDescription>();
     public DbSet<Artist> Artists => Set<Artist>();
     public DbSet<Album> Albums => Set<Album>();
     public DbSet<Genre> Genres => Set<Genre>();
@@ -31,13 +33,21 @@ public class JukeboxDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Title).IsRequired().HasMaxLength(200);
             entity.HasMany(a => a.Songs).WithOne(s => s.Album).HasForeignKey(s => s.AlbumId).OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(a => a.Description)
+                  .WithOne(d => d.Album)
+                  .HasForeignKey<AlbumDescription>(d => d.AlbumId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Song>(entity =>
-        {
-            entity.HasKey(s => s.Id);
-            entity.Property(s => s.Title).IsRequired().HasMaxLength(200);
-        });
+         modelBuilder.Entity<Song>(entity =>
+         {
+             entity.HasKey(s => s.Id);
+             entity.Property(s => s.Title).IsRequired().HasMaxLength(200);
+             entity.HasOne(s => s.Lyrics)
+                   .WithOne(l => l.Song)
+                   .HasForeignKey<SongLyrics>(l => l.SongId)
+                   .OnDelete(DeleteBehavior.Cascade);
+         });
 
         modelBuilder.Entity<Genre>(entity =>
         {

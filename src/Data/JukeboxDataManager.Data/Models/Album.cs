@@ -9,4 +9,6 @@ public class Album
     public DateTime? ReleaseDate { get; set; }
     public ICollection<Song> Songs { get; set; } = new List<Song>();
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public AlbumDescription? Description { get; set; }
 }
