@@ -3,7 +3,7 @@ using JukeboxDataManager.Data;
 using JukeboxDataManager.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace JukeboxDataManager.Grpc.Services;
+namespace Jukebox.DataManager.Grpc.Services;
 
 public class JukeboxServiceImpl : JukeboxService.JukeboxServiceBase
 {

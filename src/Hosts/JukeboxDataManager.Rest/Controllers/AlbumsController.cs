@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace JukeboxDataManager.Rest.Controllers;
+namespace Jukebox.DataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

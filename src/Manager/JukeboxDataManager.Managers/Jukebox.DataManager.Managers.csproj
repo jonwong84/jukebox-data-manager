@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JukeboxDataManager.Contracts\JukeboxDataManager.Contracts.csproj" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JukeboxDataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

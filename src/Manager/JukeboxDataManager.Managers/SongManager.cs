@@ -1,10 +1,18 @@
-using JukeboxDataManager.Contracts;
-using JukeboxDataManager.Contracts.Song;
+using AutoMapper;
+using Jukebox.DataManager.Contracts;
+using Jukebox.DataManager.Contracts.Song;
 
-namespace JukeboxDataManager.Managers;
+namespace Jukebox.DataManager.Managers;
 
 public class SongManager : ISongManager
 {
+    private readonly IMapper _mapper;
+
+    public SongManager(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
+
     public Task<SongSearchResponse> SearchSongsAsync(SongSearchRequest request, CancellationToken cancellationToken = default)
     {
         var response = new SongSearchResponse
@@ -23,9 +31,7 @@ public class SongManager : ISongManager
 
     public Task<SongSummary> AddSongAsync(AddSongRequest song)
     {
-        // TODO: Implement actual persistence logic
-        var summary = new SongSummary();
-        return Task.FromResult(summary);
+        throw new NotImplementedException();
     }
 
     public Task<SongSummary?> FindByIdAsync(int id)

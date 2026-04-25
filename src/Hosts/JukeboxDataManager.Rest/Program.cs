@@ -1,3 +1,6 @@
+using Jukebox.DataManager.Contracts;
+using Jukebox.DataManager.Managers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -6,7 +9,7 @@ builder.Services.AddSwaggerGen();
 
 
 // Register SongManager for dependency injection
-builder.Services.AddScoped<JukeboxDataManager.Contracts.ISongManager, JukeboxDataManager.Managers.SongManager>();
+builder.Services.AddScoped<ISongManager, SongManager>();
 
 var app = builder.Build();
 

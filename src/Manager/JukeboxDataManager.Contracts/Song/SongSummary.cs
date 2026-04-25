@@ -1,4 +1,4 @@
-namespace JukeboxDataManager.Contracts.Song
+namespace Jukebox.DataManager.Contracts.Song
 {
     public class SongSummary
     {

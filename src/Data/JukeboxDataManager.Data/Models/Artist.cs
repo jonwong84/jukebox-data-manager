@@ -1,4 +1,6 @@
-namespace JukeboxDataManager.Data.Models;
+using JukeboxDataManager.Data.Models;
+
+namespace Jukebox.DataManager.Data.Models;
 
 public class Artist
 {
@@ -7,5 +9,6 @@ public class Artist
     public string? Bio { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public ICollection<Song> Songs { get; set; } = new List<Song>();
-    public ICollection<Album> Albums { get; set; } = new List<Album>();
+    public ICollection<AlbumArtist> AlbumArtists { get; set; } = new List<AlbumArtist>();
 }
+    

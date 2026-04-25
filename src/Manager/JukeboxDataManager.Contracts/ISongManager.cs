@@ -1,6 +1,6 @@
-using JukeboxDataManager.Contracts.Song;
+using Jukebox.DataManager.Contracts.Song;
 
-namespace JukeboxDataManager.Contracts;
+namespace Jukebox.DataManager.Contracts;
 
 public interface ISongManager
 {

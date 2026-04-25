@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Contracts\JukeboxDataManager.Contracts.csproj" />
-    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Managers\JukeboxDataManager.Managers.csproj" />
+    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
+    <ProjectReference Include="..\..\Manager\JukeboxDataManager.Managers\Jukebox.DataManager.Managers.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,8 @@
+using Jukebox.DataManager.Data.Models;
 using JukeboxDataManager.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace JukeboxDataManager.Data;
+namespace Jukebox.DataManager.Data;
 
 public class JukeboxDbContext : DbContext
 {
@@ -11,7 +12,8 @@ public class JukeboxDbContext : DbContext
      public DbSet<SongLyrics> SongLyrics => Set<SongLyrics>();
      public DbSet<AlbumDescription> AlbumDescriptions => Set<AlbumDescription>();
     public DbSet<Artist> Artists => Set<Artist>();
-    public DbSet<Album> Albums => Set<Album>();
+     public DbSet<Album> Albums => Set<Album>();
+     public DbSet<AlbumArtist> AlbumArtists => Set<AlbumArtist>();
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<SongGenre> SongGenres => Set<SongGenre>();
 
@@ -25,7 +27,6 @@ public class JukeboxDbContext : DbContext
             entity.Property(a => a.Name).IsRequired().HasMaxLength(200);
             entity.Property(a => a.Bio).HasMaxLength(2000);
             entity.HasMany(a => a.Songs).WithOne(s => s.Artist).HasForeignKey(s => s.ArtistId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasMany(a => a.Albums).WithOne(al => al.Artist).HasForeignKey(al => al.ArtistId).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Album>(entity =>

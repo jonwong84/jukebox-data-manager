@@ -1,6 +1,4 @@
-namespace JukeboxDataManager.Contracts.Song;
-
-using System.Collections.Generic;
+namespace Jukebox.DataManager.Contracts.Song;
 
 public class SongSearchRequest
 {

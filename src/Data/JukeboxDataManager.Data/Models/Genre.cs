@@ -1,4 +1,6 @@
-namespace JukeboxDataManager.Data.Models;
+using JukeboxDataManager.Data.Models;
+
+namespace Jukebox.DataManager.Data.Models;
 
 public class Genre
 {

@@ -1,3 +1,5 @@
+using Jukebox.DataManager.Data.Models;
+
 namespace JukeboxDataManager.Data.Models;
 
 public class Song

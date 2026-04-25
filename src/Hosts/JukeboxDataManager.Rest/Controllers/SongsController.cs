@@ -1,9 +1,9 @@
-using JukeboxDataManager.Contracts;
-using JukeboxDataManager.Contracts.Song;
+using Jukebox.DataManager.Contracts;
+using Jukebox.DataManager.Contracts.Song;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace JukeboxDataManager.Rest.Controllers;
+namespace Jukebox.DataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
