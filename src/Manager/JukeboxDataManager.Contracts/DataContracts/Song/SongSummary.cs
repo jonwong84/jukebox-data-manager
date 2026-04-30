@@ -1,4 +1,4 @@
-namespace Jukebox.DataManager.Contracts.Song
+namespace Jukebox.DataManager.Contracts.DataContracts.Song
 {
     public class SongSummary
     {
@@ -6,7 +6,5 @@ namespace Jukebox.DataManager.Contracts.Song
         public string Title { get; set; } = string.Empty;
         public string Artist { get; set; } = string.Empty;
         public string Album { get; set; } = string.Empty;
-        public TimeSpan Duration { get; set; }
-        public string Lyrics { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,4 @@
-namespace Jukebox.DataManager.Contracts.Song;
+namespace Jukebox.DataManager.Contracts.DataContracts.Song;
 
 public class UpdateSongRequest
 {
@@ -8,5 +8,7 @@ public class UpdateSongRequest
     public int? AlbumId { get; set; }
     public TimeSpan Duration { get; set; }
     public int? TrackNumber { get; set; }
-    // Add other fields as needed
+    public int? Bpm { get; set; }
+    public string Lyrics { get; set; } = string.Empty;
+    public List<int> GenreIds { get; set; } = [];
 }

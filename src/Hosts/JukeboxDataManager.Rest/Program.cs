@@ -10,6 +10,7 @@ builder.Services.AddSwaggerGen();
 
 // Register SongManager for dependency injection
 builder.Services.AddScoped<ISongManager, SongManager>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

@@ -1,0 +1,35 @@
+version: 2.1
+
+orbs:
+  dotnet: circleci/dotnet@2.5
+  snyk: snyk/snyk@2.0
+
+jobs:
+  build_and_scan:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
+    steps:
+      - checkout
+      - dotnet/restore
+      - snyk/scan:
+          severity-threshold: high
+      - dotnet/build
+
+  test_integration:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
+      - image: mcr.microsoft.com/mssql/server:2022-latest # Service container
+        environment:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "YourStrongPassword!"
+    steps:
+      - checkout
+      - run: dotnet test --filter Category=Integration
+
+workflows:
+  quality_gate:
+    jobs:
+      - build_and_scan
+      - test_integration:
+          requires:
+            - build_and_scan

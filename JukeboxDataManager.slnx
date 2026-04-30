@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/" />
   <Folder Name="/src/Host/">
+    <Project Path="Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" Id="23e206ce-a21b-4284-bbc4-f31dbac60e8d" />
     <Project Path="src/Hosts/JukeboxDataManager.Grpc/Jukebox.DataManager.Grpc.csproj" />
     <Project Path="src/Hosts/JukeboxDataManager.Rest/Jukebox.DataManager.Rest.csproj" />
   </Folder>

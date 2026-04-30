@@ -1,6 +1,7 @@
 using Jukebox.DataManager.Contracts;
-using Jukebox.DataManager.Contracts.Song;
+using Jukebox.DataManager.Contracts.DataContracts.Song;
 using Microsoft.AspNetCore.Mvc;
+using Jukebox.DataManager.Contracts.DataContracts.Common;
 
 
 namespace Jukebox.DataManager.Rest.Controllers;
@@ -17,46 +18,43 @@ public class SongsController : ControllerBase
         _songManager = songManager;
     }
 
-    [HttpPost("search")]
-    public async Task<ActionResult<SongSearchResponse>> SearchSongs([FromBody] SongSearchRequest request)
-    {
-        var response = await _songManager.SearchSongsAsync(request);
-        return Ok(response);
-    }
-
     [HttpGet("{id}")]
     public async Task<ActionResult<SongSummary>> GetSong(int id)
     {
-        var song = await _songManager.FindByIdAsync(id); // song should be of type Song
-        if (song == null) return NotFound();
-        var summary = new SongSummary
-        {
-            Id = song.Id,
-            Title = song.Title,
-            Artist = song.Artist,
-            Album = song.Album,
-            Duration = song.Duration,
-            Lyrics = song.Lyrics
-        };
-        return summary;
+        var response = await _songManager.FindByIdAsync(id);
+        return response.Success ? Ok(response.Data) : NotFound(response.ErrorMessage);
     }
 
     [HttpPost]
     public async Task<ActionResult<SongSummary>> AddSong(AddSongRequest request)
     {
-        var summary = await _songManager.AddSongAsync(request);
-        return CreatedAtAction(nameof(GetSong), new { id = summary.Id }, summary);
+        var managerRequest = new ManagerRequest<AddSongRequest>(){
+            UserId = User.Identity?.Name ?? "Unknown",
+            Data = request
+        };
+        var response = await _songManager.AddSongAsync(managerRequest);
+        return response.Success ? CreatedAtAction(nameof(GetSong), new { id = response.Data.Id }, response.Data) : BadRequest(response.ErrorMessage);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSong(UpdateSongRequest request)
+    public async Task<IActionResult> UpdateSong(int id, UpdateSongRequest request)
     {
-        throw new NotImplementedException("UpdateSong is not implemented yet.");
+        var managerRequest = new ManagerRequest<UpdateSongRequest>(){
+            UserId = User.Identity?.Name ?? "Unknown",
+            Data = request
+        };
+        var response = await _songManager.UpdateSongAsync(managerRequest);
+        return response.Success ? Ok(response.Data) : BadRequest(response.ErrorMessage);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSong(int id)
     {
-        throw new NotImplementedException("DeleteSong is not implemented yet.");
+        var managerRequest = new ManagerRequest<int>(){
+            UserId = User.Identity?.Name ?? "Unknown",
+            Data = id
+        };
+        var response = await _songManager.DeleteSongAsync(managerRequest);
+        return response.Success ? NoContent() : BadRequest(response.ErrorMessage);
     }
 }
