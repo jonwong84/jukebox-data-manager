@@ -1,5 +1,6 @@
 using AutoMapper;
 using Jukebox.DataManager.Contracts;
+using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
 
 namespace Jukebox.DataManager.Managers;
@@ -13,22 +14,22 @@ public class SongManager : ISongManager
         _mapper = mapper;
     }
 
-    public Task<SongSummary> AddSongAsync(AddSongRequest song)
+    public Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest)
     {
         throw new NotImplementedException();
     }
 
-    public Task<SongSummary?> FindByIdAsync(int id)
+    public Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest)
     {
         throw new NotImplementedException();
     }
 
-    public Task<SongSummary> UpdateSongAsync(UpdateSongRequest request)
+    public Task<ManagerResponse<SongSummary>> FindByIdAsync(int id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteSongAsync(int id)
+    public Task<ManagerResponse<SongSummary>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest)
     {
         throw new NotImplementedException();
     }
