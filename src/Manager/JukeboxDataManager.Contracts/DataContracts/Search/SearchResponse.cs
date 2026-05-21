@@ -1,7 +1,10 @@
-﻿namespace Jukebox.DataManager.Contracts.DataContracts.Search
+﻿using Jukebox.DataManager.Contracts.DataContracts.Song;
+
+namespace Jukebox.DataManager.Contracts.DataContracts.Search
 {
     public class SearchResponse
     {
-        // TODO: Response data, including filters used, list of results, pagination info, etc.
+        public List<SongSummary> Songs { get; set; } = new();
+        public int TotalCount { get; set; }
     }
 }
