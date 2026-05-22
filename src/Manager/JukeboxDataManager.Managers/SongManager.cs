@@ -5,7 +5,7 @@ using Jukebox.DataManager.Contracts.DataContracts.Song;
 
 namespace Jukebox.DataManager.Managers;
 
-public class SongManager : ISongManager
+public sealed class SongManager : ISongManager
 {
     private readonly IMapper _mapper;
 

@@ -9,14 +9,9 @@ namespace Jukebox.DataManager.Rest.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 
-public class SongsController : ControllerBase
+public class SongsController(ISongManager songManager) : ControllerBase
 {
-    private readonly ISongManager _songManager;
-
-    public SongsController(ISongManager songManager)
-    {
-        _songManager = songManager;
-    }
+    private readonly ISongManager _songManager = songManager;
 
     [HttpGet("{id}")]
     public async Task<ActionResult<SongSummary>> GetSong(int id)
@@ -37,7 +32,7 @@ public class SongsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSong(int id, UpdateSongRequest request)
+    public async Task<ActionResult<SongSummary>> UpdateSong(int id, UpdateSongRequest request)
     {
         var managerRequest = new ManagerRequest<UpdateSongRequest>(){
             UserId = User.Identity?.Name ?? "Unknown",
@@ -48,7 +43,7 @@ public class SongsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSong(int id)
+    public async Task<ActionResult<DeleteSongResult>> DeleteSong(int id)
     {
         var managerRequest = new ManagerRequest<int>(){
             UserId = User.Identity?.Name ?? "Unknown",

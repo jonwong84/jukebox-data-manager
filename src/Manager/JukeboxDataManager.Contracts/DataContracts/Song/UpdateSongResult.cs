@@ -1,6 +1,6 @@
 ﻿namespace Jukebox.DataManager.Contracts.DataContracts.Song
 {
-    public class AddSongResponse
+    public class UpdateSongResult
     {
         public bool Success { get; set; }
         public int? SongId { get; set; }
