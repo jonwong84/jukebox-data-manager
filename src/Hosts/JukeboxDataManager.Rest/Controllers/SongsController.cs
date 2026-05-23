@@ -14,14 +14,14 @@ public class SongsController(ISongManager songManager) : ControllerBase
     private readonly ISongManager _songManager = songManager;
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SongSummary>> GetSong(int id)
+    public async Task<ActionResult<SongDetails>> GetSong(int id)
     {
         var response = await _songManager.FindByIdAsync(id);
         return response.Success ? Ok(response.Data) : NotFound(response.ErrorMessage);
     }
 
     [HttpPost]
-    public async Task<ActionResult<SongSummary>> AddSong(AddSongRequest request)
+    public async Task<ActionResult<SongDetails>> AddSong(AddSongRequest request)
     {
         var managerRequest = new ManagerRequest<AddSongRequest>(){
             UserId = User.Identity?.Name ?? "Unknown",

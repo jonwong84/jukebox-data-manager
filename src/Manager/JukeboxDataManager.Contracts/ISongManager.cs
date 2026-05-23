@@ -5,11 +5,11 @@ namespace Jukebox.DataManager.Contracts;
 
 public interface ISongManager
 {
-    Task<ManagerResponse<SongSummary>> FindByIdAsync(int id);
+    Task<ManagerResponse<SongDetails>> FindByIdAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default);
 
-    Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest);
+    Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest, CancellationToken cancellationToken = default);
 
-    Task<ManagerResponse<SongSummary>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest);
+    Task<ManagerResponse<SongDetails>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest, CancellationToken cancellationToken = default);
 
-    Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest);
+    Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default);
 }

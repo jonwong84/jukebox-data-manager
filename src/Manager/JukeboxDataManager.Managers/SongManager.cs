@@ -2,35 +2,147 @@ using AutoMapper;
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Jukebox.DataManager.Managers;
 
 public sealed class SongManager : ISongManager
 {
+    private readonly ISongRepositoryAccess _songRepositoryAccess;
     private readonly IMapper _mapper;
+    private readonly ILogger<SongManager> _logger;
 
-    public SongManager(IMapper mapper)
+    public SongManager(ISongRepositoryAccess songRepositoryAccess, IMapper mapper, ILogger<SongManager> logger)
     {
+        _songRepositoryAccess = songRepositoryAccess;
         _mapper = mapper;
+        _logger = logger;
     }
 
-    public Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest)
+    public async Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("User {UserId} requested to add song with title {Title} at {RequestTime}",
+            managerRequest.UserId, managerRequest.Data.Title, managerRequest.RequestTime);
+
+        managerRequest.Data.UserId = managerRequest.UserId;
+
+        var result = await _songRepositoryAccess.AddAsync(managerRequest.Data, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("Failed to add song with title {Title}. Requested by {UserId}. Reason: {ErrorMessage}",
+                managerRequest.Data.Title, managerRequest.UserId, result.ErrorMessage);
+
+            return new ManagerResponse<SongSummary>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
+        _logger.LogInformation("Successfully added song with ID {SongId}. Requested by {UserId}",
+            result.SongId, managerRequest.UserId);
+
+        return new ManagerResponse<SongSummary>
+        {
+            Success = true,
+            Data = new SongSummary { Id = result.SongId!.Value },
+            ResponseTime = DateTime.UtcNow,
+        };
     }
 
-    public Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest)
+    public async Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("User {UserId} requested to delete song with ID {SongId} at {RequestTime}",
+            managerRequest.UserId, managerRequest.Data, managerRequest.RequestTime);
+
+        var result = await _songRepositoryAccess.DeleteAsync(managerRequest.Data, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("Failed to delete song with ID {SongId}. Requested by {UserId}. Reason: {ErrorMessage}",
+                managerRequest.Data, managerRequest.UserId, result.ErrorMessage);
+
+            return new ManagerResponse<bool>
+            {
+                Success = false,
+                Data = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
+        _logger.LogInformation("Successfully deleted song with ID {SongId}. Requested by {UserId}",
+            managerRequest.Data, managerRequest.UserId);
+
+        return new ManagerResponse<bool>
+        {
+            Success = true,
+            Data = true,
+            ResponseTime = DateTime.UtcNow,
+        };
     }
 
-    public Task<ManagerResponse<SongSummary>> FindByIdAsync(int id)
+    public async Task<ManagerResponse<SongDetails>> FindByIdAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("User {UserId} requested song with ID {SongId} at {RequestTime}",
+            managerRequest.UserId, managerRequest.Data, managerRequest.RequestTime);
+
+        var result = await _songRepositoryAccess.GetByIdAsync(managerRequest.Data, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("Song with ID {SongId} was not found. Requested by {UserId}",
+                managerRequest.Data, managerRequest.UserId);
+
+            return new ManagerResponse<SongDetails>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
+        return new ManagerResponse<SongDetails>
+        {
+            Success = true,
+            Data = _mapper.Map<SongDetails>(result.SongDetails),
+            ResponseTime = DateTime.UtcNow,
+        };
     }
 
-    public Task<ManagerResponse<SongSummary>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest)
+    public async Task<ManagerResponse<SongDetails>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("User {UserId} requested to update song with ID {SongId} at {RequestTime}",
+            managerRequest.UserId, managerRequest.Data.Id, managerRequest.RequestTime);
+
+        managerRequest.Data.UserId = managerRequest.UserId;
+
+        var result = await _songRepositoryAccess.UpdateAsync(managerRequest.Data, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("Failed to update song with ID {SongId}. Requested by {UserId}. Reason: {ErrorMessage}",
+                managerRequest.Data.Id, managerRequest.UserId, result.ErrorMessage);
+
+            return new ManagerResponse<SongDetails>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
+        _logger.LogInformation("Successfully updated song with ID {SongId}. Requested by {UserId}",
+            managerRequest.Data.Id, managerRequest.UserId);
+
+        return new ManagerResponse<SongDetails>
+        {
+            Success = true,
+            Data = _mapper.Map<SongDetails>(result.SongDetails),
+            ResponseTime = DateTime.UtcNow,
+        };
     }
 }

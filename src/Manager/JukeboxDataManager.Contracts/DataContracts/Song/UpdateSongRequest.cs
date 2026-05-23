@@ -11,4 +11,5 @@ public class UpdateSongRequest
     public int? Bpm { get; set; }
     public string Lyrics { get; set; } = string.Empty;
     public List<int> GenreIds { get; set; } = [];
+    public string? UserId { get; set; }
 }

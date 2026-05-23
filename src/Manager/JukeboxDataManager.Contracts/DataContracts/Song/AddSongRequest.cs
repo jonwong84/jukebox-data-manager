@@ -10,4 +10,5 @@ public class AddSongRequest
     public int? TrackNumber { get; set; }
     public int? Bpm { get; set; }
     public string Lyrics { get; set; } = string.Empty;
+    public string? UserId { get; set; }
 }
