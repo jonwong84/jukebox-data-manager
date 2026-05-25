@@ -1,55 +1,64 @@
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
-using Microsoft.AspNetCore.Mvc;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jukebox.DataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class SongsController(ISongManager songManager) : ControllerBase
 {
     private readonly ISongManager _songManager = songManager;
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SongDetails>> GetSong(int id)
+    public async Task<ActionResult<SongDetails>> GetSong(int id, CancellationToken cancellationToken)
     {
-        var response = await _songManager.FindByIdAsync(id);
+        var managerRequest = new ManagerRequest<int>
+        {
+            UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
+            Data = id
+        };
+        var response = await _songManager.FindByIdAsync(managerRequest, cancellationToken);
         return response.Success ? Ok(response.Data) : NotFound(response.ErrorMessage);
     }
 
     [HttpPost]
-    public async Task<ActionResult<SongDetails>> AddSong(AddSongRequest request)
+    public async Task<ActionResult<SongSummary>> AddSong(AddSongRequest request, CancellationToken cancellationToken)
     {
-        var managerRequest = new ManagerRequest<AddSongRequest>(){
-            UserId = User.Identity?.Name ?? "Unknown",
+        var managerRequest = new ManagerRequest<AddSongRequest>
+        {
+            UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
             Data = request
         };
-        var response = await _songManager.AddSongAsync(managerRequest);
-        return response.Success ? CreatedAtAction(nameof(GetSong), new { id = response.Data.Id }, response.Data) : BadRequest(response.ErrorMessage);
+        var response = await _songManager.AddSongAsync(managerRequest, cancellationToken);
+        return response.Success
+            ? CreatedAtAction(nameof(GetSong), new { id = response.Data!.Id }, response.Data)
+            : BadRequest(response.ErrorMessage);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SongSummary>> UpdateSong(int id, UpdateSongRequest request)
+    public async Task<ActionResult<SongDetails>> UpdateSong(int id, UpdateSongRequest request, CancellationToken cancellationToken)
     {
-        var managerRequest = new ManagerRequest<UpdateSongRequest>(){
-            UserId = User.Identity?.Name ?? "Unknown",
+        request.Id = id;
+        var managerRequest = new ManagerRequest<UpdateSongRequest>
+        {
+            UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
             Data = request
         };
-        var response = await _songManager.UpdateSongAsync(managerRequest);
+        var response = await _songManager.UpdateSongAsync(managerRequest, cancellationToken);
         return response.Success ? Ok(response.Data) : BadRequest(response.ErrorMessage);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<DeleteSongResult>> DeleteSong(int id)
+    public async Task<ActionResult> DeleteSong(int id, CancellationToken cancellationToken)
     {
-        var managerRequest = new ManagerRequest<int>(){
-            UserId = User.Identity?.Name ?? "Unknown",
+        var managerRequest = new ManagerRequest<int>
+        {
+            UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
             Data = id
         };
-        var response = await _songManager.DeleteSongAsync(managerRequest);
+        var response = await _songManager.DeleteSongAsync(managerRequest, cancellationToken);
         return response.Success ? NoContent() : BadRequest(response.ErrorMessage);
     }
 }

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "JukeboxDataManager.Grpc.Common";
+
+package jukebox.common;
+
+message PaginationRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message PaginationResponse {
+  int32 page = 1;
+  int32 page_size = 2;
+  int32 total_count = 3;
+  int32 total_pages = 4;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+message ArtistSummary {
+  int32 id = 1;
+  string name = 2;
+}
+
+message AlbumSummary {
+  int32 id = 1;
+  string title = 2;
+  repeated ArtistSummary artists = 3;
+}
+
+message GenreSummary {
+  int32 id = 1;
+  string name = 2;
+}

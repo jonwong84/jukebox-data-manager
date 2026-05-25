@@ -1,16 +1,19 @@
-using JukeboxDataManager.Data;
-using JukeboxDataManager.Grpc.Services;
-using Microsoft.EntityFrameworkCore;
+using Jukebox.DataAccess.Extensions;
+using Jukebox.DataManager.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
-builder.Services.AddDbContext<JukeboxDbContext>(options =>
-    options.UseInMemoryDatabase("JukeboxGrpcDev"));
+
+builder.Services.AddDataAccess();
+builder.Services.AddDataManager();
 
 var app = builder.Build();
 
-app.MapGrpcService<JukeboxServiceImpl>();
+app.MapGrpcService<SongServiceImpl>();
+app.MapGrpcService<ArtistServiceImpl>();
+app.MapGrpcService<AlbumServiceImpl>();
+
 app.MapGet("/", () => "gRPC endpoint. Use a gRPC client to communicate.");
 
 app.Run();

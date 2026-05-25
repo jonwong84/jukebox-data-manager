@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+import "common.proto";
+
+option csharp_namespace = "JukeboxDataManager.Grpc.Artist";
+
+package jukebox.artist;
+
+service ArtistService {
+  rpc ListArtists (ListArtistsRequest) returns (ListArtistsResponse);
+  rpc GetArtist (GetArtistRequest) returns (GetArtistResponse);
+  rpc CreateArtist (CreateArtistRequest) returns (ArtistResponse);
+  rpc UpdateArtist (UpdateArtistRequest) returns (ArtistResponse);
+  rpc DeleteArtist (DeleteArtistRequest) returns (jukebox.common.DeleteResponse);
+}
+
+message ArtistDetails {
+  int32 id = 1;
+  string name = 2;
+  string bio = 3;
+  string created_at = 4;
+}
+
+message ArtistResponse {
+  bool success = 1;
+  string error_message = 2;
+  ArtistDetails artist = 3;
+}
+
+message GetArtistResponse {
+  bool success = 1;
+  string error_message = 2;
+  ArtistDetails artist = 3;
+}
+
+message ListArtistsRequest {
+  jukebox.common.PaginationRequest pagination = 1;
+  string user_id = 2;
+  optional string name_search = 3;
+}
+
+message ListArtistsResponse {
+  bool success = 1;
+  string error_message = 2;
+  repeated jukebox.common.ArtistSummary artists = 3;
+  jukebox.common.PaginationResponse pagination = 4;
+}
+
+message GetArtistRequest {
+  int32 id = 1;
+  string user_id = 2;
+}
+
+message CreateArtistRequest {
+  string user_id = 1;
+  string name = 2;
+  string bio = 3;
+}
+
+message UpdateArtistRequest {
+  string user_id = 1;
+  int32 id = 2;
+  string name = 3;
+  string bio = 4;
+}
+
+message DeleteArtistRequest {
+  int32 id = 1;
+  string user_id = 2;
+}
