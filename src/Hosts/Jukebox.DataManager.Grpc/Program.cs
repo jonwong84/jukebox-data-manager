@@ -1,5 +1,6 @@
 using Jukebox.DataAccess.Extensions;
-using Jukebox.DataManager.Extensions;
+using Jukebox.DataManager.Grpc.Services;
+using Jukebox.DataManager.Managers.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,8 @@ builder.Services.AddDataManager();
 var app = builder.Build();
 
 app.MapGrpcService<SongServiceImpl>();
-app.MapGrpcService<ArtistServiceImpl>();
-app.MapGrpcService<AlbumServiceImpl>();
+//app.MapGrpcService<ArtistServiceImpl>();
+//app.MapGrpcService<AlbumServiceImpl>();
 
 app.MapGet("/", () => "gRPC endpoint. Use a gRPC client to communicate.");
 

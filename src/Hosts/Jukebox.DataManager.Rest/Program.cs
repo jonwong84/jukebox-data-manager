@@ -1,5 +1,5 @@
 using Jukebox.DataAccess.Extensions;
-using Jukebox.DataManager.Rest.Extensions;
+using Jukebox.DataManager.Managers.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

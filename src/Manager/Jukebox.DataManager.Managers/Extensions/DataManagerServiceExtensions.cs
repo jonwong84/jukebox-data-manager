@@ -1,8 +1,8 @@
 ﻿using Jukebox.DataManager.Contracts;
-using Jukebox.DataManager.Managers;
 using Jukebox.DataManager.Managers.Mapping.AutoMapper.Song;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Jukebox.DataManager.Rest.Extensions;
+namespace Jukebox.DataManager.Managers.Extensions;
 
 public static class DataManagerServiceExtensions
 {

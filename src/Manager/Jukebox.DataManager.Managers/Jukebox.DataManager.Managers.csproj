@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JukeboxDataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
+    <ProjectReference Include="..\Jukebox.DataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

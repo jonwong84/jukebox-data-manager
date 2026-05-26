@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "JukeboxDataManager.Grpc.Common";
+option csharp_namespace = "Jukebox.DataManager.Grpc.Common";
 
 package jukebox.common;
 

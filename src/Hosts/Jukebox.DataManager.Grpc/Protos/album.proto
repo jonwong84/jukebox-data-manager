@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-import "common.proto";
+import "Protos/common.proto";
 
-option csharp_namespace = "JukeboxDataManager.Grpc.Album";
+option csharp_namespace = "Jukebox.DataManager.Grpc.Album";
 
 package jukebox.album;
 
