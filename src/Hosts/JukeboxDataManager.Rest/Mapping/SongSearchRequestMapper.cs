@@ -5,7 +5,7 @@ namespace Jukebox.DataManager.Rest.Mapping
 {
     public static class SongSearchRequestMapper
     {
-        public static SearchRequest MapSearchRequest(SongSearchRequest request)
+        public static SearchRequest MapSearchRequest(SearchRequest request)
         {
             return new SearchRequest
             {

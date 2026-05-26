@@ -26,8 +26,9 @@ public sealed class SongManager : ISongManager
             managerRequest.UserId, managerRequest.Data.Title, managerRequest.RequestTime);
 
         managerRequest.Data.UserId = managerRequest.UserId;
+        var accessRequest = _mapper.Map<DataAccess.Contracts.DataContracts.Song.AddSongRequest>(managerRequest);
 
-        var result = await _songRepositoryAccess.AddAsync(managerRequest.Data, cancellationToken);
+        var result = await _songRepositoryAccess.AddAsync(accessRequest, cancellationToken);
 
         if (!result.Success)
         {
@@ -120,7 +121,9 @@ public sealed class SongManager : ISongManager
 
         managerRequest.Data.UserId = managerRequest.UserId;
 
-        var result = await _songRepositoryAccess.UpdateAsync(managerRequest.Data, cancellationToken);
+        var accessRequest = _mapper.Map<Jukebox.DataAccess.Contracts.DataContracts.Song.UpdateSongRequest>(managerRequest);
+
+        var result = await _songRepositoryAccess.UpdateAsync(accessRequest, cancellationToken);
 
         if (!result.Success)
         {

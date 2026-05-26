@@ -1,7 +1,5 @@
 using Jukebox.DataAccess.Extensions;
-using Jukebox.DataManager.Extensions;
 using Jukebox.DataManager.Rest.Extensions;
-using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 

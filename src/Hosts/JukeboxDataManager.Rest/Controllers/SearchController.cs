@@ -19,11 +19,12 @@ namespace Jukebox.DataManager.Rest.Controllers
         }
 
         [HttpPost("search")]
-        public async Task<ActionResult<SongSearchResponse>> SearchSongs([FromBody] SongSearchRequest request)
+        public async Task<ActionResult<SearchResponse>> SearchSongs([FromBody] SearchRequest request)
         {
             var managerRequestData = SongSearchRequestMapper.MapSearchRequest(request);
             var managerRequest = new ManagerRequest<SearchRequest>
             {
+                UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
                 Data = managerRequestData,
                 RequestTime = DateTime.Now,
             };

@@ -8,8 +8,9 @@ namespace Jukebox.DataManager.Managers.Mapping.AutoMapper.Song
     {
         public SongProfile()
         {
-            CreateMap<DAL.Common.ArtistSummary, BLL.Common.ArtistSummary>();
-            CreateMap<DAL.Common.AlbumSummary, BLL.Common.AlbumSummary>();
+            // TODO: Will add the following at a later time
+            //CreateMap<DAL.Common.ArtistSummary, BLL.Common.ArtistSummary>();
+            //CreateMap<DAL.Common.AlbumSummary, BLL.Common.AlbumSummary>();
             CreateMap<DAL.Common.GenreSummary, BLL.Common.GenreSummary>();
             CreateMap<DAL.Song.SongSummary, BLL.Song.SongSummary>();
             CreateMap<DAL.Song.SongDetails, BLL.Song.SongDetails>();
