@@ -21,6 +21,7 @@ message AlbumDetails {
   string release_date = 4;
   string created_at = 5;
   bool is_compilation = 6;
+  string description = 7;
 }
 
 message AlbumResponse {
@@ -61,6 +62,7 @@ message CreateAlbumRequest {
   repeated int32 artist_ids = 3;
   string release_date = 4;
   bool is_compilation = 5;
+  string description = 6;
 }
 
 message UpdateAlbumRequest {
@@ -70,6 +72,7 @@ message UpdateAlbumRequest {
   repeated int32 artist_ids = 4;
   string release_date = 5;
   bool is_compilation = 6;
+  string description = 7;
 }
 
 message DeleteAlbumRequest {

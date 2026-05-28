@@ -9,12 +9,15 @@ builder.Services.AddGrpc();
 builder.Services.AddDataAccess();
 builder.Services.AddDataManager();
 builder.Services.AddGrpcReflection();
+builder.Services.AddScoped<ArtistServiceImpl>();
+builder.Services.AddScoped<AlbumServiceImpl>();
+builder.Services.AddScoped<SongServiceImpl>();
 
 var app = builder.Build();
 
 app.MapGrpcService<SongServiceImpl>();
 app.MapGrpcService<ArtistServiceImpl>();
-//app.MapGrpcService<AlbumServiceImpl>();
+app.MapGrpcService<AlbumServiceImpl>();
 
 if (app.Environment.IsDevelopment())
 {
