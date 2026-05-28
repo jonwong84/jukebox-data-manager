@@ -1,9 +1,10 @@
 using AutoMapper;
+using Jukebox.DataAccess.Interfaces;
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
-using Jukebox.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
+using DAL = Jukebox.DataAccess.Contracts.DataContracts;
 
 namespace Jukebox.DataManager.Managers;
 
@@ -26,8 +27,7 @@ public sealed class SongManager : ISongManager
             managerRequest.UserId, managerRequest.Data.Title, managerRequest.RequestTime);
 
         managerRequest.Data.UserId = managerRequest.UserId;
-        var accessRequest = _mapper.Map<DataAccess.Contracts.DataContracts.Song.AddSongRequest>(managerRequest);
-
+        var accessRequest = _mapper.Map<DAL.Song.AddSongRequest>(managerRequest.Data);
         var result = await _songRepositoryAccess.AddAsync(accessRequest, cancellationToken);
 
         if (!result.Success)
@@ -121,8 +121,7 @@ public sealed class SongManager : ISongManager
 
         managerRequest.Data.UserId = managerRequest.UserId;
 
-        var accessRequest = _mapper.Map<Jukebox.DataAccess.Contracts.DataContracts.Song.UpdateSongRequest>(managerRequest);
-
+        var accessRequest = _mapper.Map<DAL.Song.UpdateSongRequest>(managerRequest.Data);
         var result = await _songRepositoryAccess.UpdateAsync(accessRequest, cancellationToken);
 
         if (!result.Success)

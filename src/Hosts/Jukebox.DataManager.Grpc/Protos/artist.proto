@@ -19,6 +19,7 @@ message ArtistDetails {
   string name = 2;
   string bio = 3;
   string created_at = 4;
+  repeated jukebox.common.AlbumSummary albums = 5;
 }
 
 message ArtistResponse {

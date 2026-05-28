@@ -8,12 +8,13 @@ namespace Jukebox.DataManager.Managers.Mapping.AutoMapper.Song
     {
         public SongProfile()
         {
-            // TODO: Will add the following at a later time
-            //CreateMap<DAL.Common.ArtistSummary, BLL.Common.ArtistSummary>();
-            //CreateMap<DAL.Common.AlbumSummary, BLL.Common.AlbumSummary>();
+            CreateMap<DAL.Artist.ArtistSummary, BLL.Artist.ArtistSummary>();
+            CreateMap<DAL.Album.AlbumSummary, BLL.Album.AlbumSummary>();
             CreateMap<DAL.Common.GenreSummary, BLL.Common.GenreSummary>();
             CreateMap<DAL.Song.SongSummary, BLL.Song.SongSummary>();
             CreateMap<DAL.Song.SongDetails, BLL.Song.SongDetails>();
+            CreateMap<BLL.Song.AddSongRequest, DAL.Song.AddSongRequest>();
+            CreateMap<BLL.Song.UpdateSongRequest, DAL.Song.UpdateSongRequest>();
         }
     }
 }

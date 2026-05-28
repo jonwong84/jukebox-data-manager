@@ -137,7 +137,7 @@ public class SongServiceImpl : SongService.SongServiceBase
         };
     }
 
-    public override async Task<Jukebox.DataManager.Grpc.Common.DeleteResponse> DeleteSong(DeleteSongRequest request, ServerCallContext context)
+    public override async Task<Common.DeleteResponse> DeleteSong(DeleteSongRequest request, ServerCallContext context)
     {
         var managerRequest = new ManagerRequest<int>
         {
@@ -155,7 +155,9 @@ public class SongServiceImpl : SongService.SongServiceBase
     }
 
     private static GrpcSong.SongDetails MapToSongDetails(
-        ManagerContracts.SongDetails song) => new()
+        ManagerContracts.SongDetails song)
+    {
+        var details = new GrpcSong.SongDetails
         {
             Id = song.Id,
             Title = song.Title,
@@ -165,25 +167,44 @@ public class SongServiceImpl : SongService.SongServiceBase
                 Id = song.Artist.Id,
                 Name = song.Artist.Name,
             },
-            AlbumId = song.AlbumId ?? 0,
-            Album = song.Album is null ? null : new Jukebox.DataManager.Grpc.Common.AlbumSummary
+            DurationTicks = song.Duration.Ticks,
+            Genres = { song.Genres.Select(g => new Jukebox.DataManager.Grpc.Common.GenreSummary
+        {
+            Id = g.Id,
+            Name = g.Name,
+        })},
+            Lyrics = song.Lyrics,
+        };
+
+        if (song.AlbumId.HasValue)
+        {
+            details.AlbumId = song.AlbumId.Value;
+        }
+
+        if (song.Album is not null)
+        {
+            details.Album = new Jukebox.DataManager.Grpc.Common.AlbumSummary
             {
                 Id = song.Album.Id,
                 Title = song.Album.Title,
                 Artists = { song.Album.Artists.Select(a => new Jukebox.DataManager.Grpc.Common.ArtistSummary
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                })},
-            },
-            DurationTicks = song.Duration.Ticks,
-            Genres = { song.Genres.Select(g => new Jukebox.DataManager.Grpc.Common.GenreSummary
             {
-                Id = g.Id,
-                Name = g.Name,
+                Id = a.Id,
+                Name = a.Name,
             })},
-            TrackNumber = song.TrackNumber ?? 0,
-            Bpm = song.Bpm ?? 0,
-            Lyrics = song.Lyrics,
-        };
+            };
+        }
+
+        if (song.TrackNumber.HasValue)
+        {
+            details.TrackNumber = song.TrackNumber.Value;
+        }
+
+        if (song.Bpm.HasValue)
+        {
+            details.Bpm = song.Bpm.Value;
+        }
+
+        return details;
+    }
 }
