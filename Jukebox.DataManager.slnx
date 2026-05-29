@@ -9,5 +9,8 @@
     <Project Path="src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" />
     <Project Path="src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" />
   </Folder>
-  <Folder Name="/Solution Files/" />
+  <Folder Name="/Solution Files/">
+    <File Path="CHANGELOG.md" />
+    <File Path="README.md" />
+  </Folder>
 </Solution>
