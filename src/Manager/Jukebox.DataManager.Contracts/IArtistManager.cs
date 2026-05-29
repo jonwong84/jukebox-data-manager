@@ -12,4 +12,6 @@ public interface IArtistManager
     Task<ManagerResponse<ArtistDetails>> UpdateArtistAsync(ManagerRequest<UpdateArtistRequest> managerRequest, CancellationToken cancellationToken = default);
 
     Task<ManagerResponse<bool>> DeleteArtistAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default);
+
+    Task<ManagerResponse<PagedResult<ArtistSummary>>> ListAsync(ManagerRequest<ListArtistsRequest> request, CancellationToken cancellationToken = default);
 }

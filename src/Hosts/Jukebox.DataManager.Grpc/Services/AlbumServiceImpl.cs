@@ -2,8 +2,9 @@
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Grpc.Album;
-using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Album;
+using Jukebox.DataManager.Grpc.Common;
 using GrpcAlbum = Jukebox.DataManager.Grpc.Album;
+using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Album;
 
 namespace Jukebox.DataManager.Grpc.Services;
 
@@ -144,6 +145,48 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
             Success = response.Success,
             ErrorMessage = response.ErrorMessage ?? string.Empty,
         };
+    }
+
+    public override async Task<ListAlbumsResponse> ListAlbums(ListAlbumsRequest request, ServerCallContext context)
+    {
+        var managerRequest = new ManagerRequest<ManagerContracts.ListAlbumsRequest>
+        {
+            UserId = request.UserId,
+            Data = new ManagerContracts.ListAlbumsRequest
+            {
+                PageNumber = request.Pagination.Page,
+                PageSize = request.Pagination.PageSize,
+                ArtistId = request.HasArtistId ? request.ArtistId : null,
+                GenreId = request.HasGenreId ? request.GenreId : null,
+                TitleSearch = request.HasTitleSearch ? request.TitleSearch : null
+            }
+        };
+
+        var result = await _albumManager.ListAsync(managerRequest, context.CancellationToken);
+
+        if (!result.Success)
+            throw new RpcException(new Status(StatusCode.Internal, result.ErrorMessage ?? "List failed"));
+
+        var response = new ListAlbumsResponse
+        {
+            Success = true,
+            Pagination = new PaginationResponse
+            {
+                TotalCount = result.Data!.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize,
+                TotalPages = (int)Math.Ceiling((double)result.Data.TotalCount / result.Data.PageSize)
+            }
+        };
+
+        response.Albums.AddRange(result.Data.Items.Select(a => new Common.AlbumSummary
+        {
+            Id = a.Id,
+            Title = a.Title,
+            Artists = { a.Artists.Select(ar => new Common.ArtistSummary { Id = ar.Id, Name = ar.Name }) }
+        }));
+
+        return response;
     }
 
     private static GrpcAlbum.AlbumDetails MapToAlbumDetails(

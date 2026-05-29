@@ -15,6 +15,7 @@ namespace Jukebox.DataManager.Managers.Mapping.AutoMapper.Song
             CreateMap<DAL.Song.SongDetails, BLL.Song.SongDetails>();
             CreateMap<BLL.Song.AddSongRequest, DAL.Song.AddSongRequest>();
             CreateMap<BLL.Song.UpdateSongRequest, DAL.Song.UpdateSongRequest>();
+            CreateMap<BLL.Song.ListSongsRequest, DAL.Song.ListSongsRequest>();
         }
     }
 }

@@ -147,4 +147,41 @@ public sealed class SongManager : ISongManager
             ResponseTime = DateTime.UtcNow,
         };
     }
+
+    public async Task<ManagerResponse<PagedResult<SongSummary>>> ListAsync(ManagerRequest<ListSongsRequest> request, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("ListAsync called by UserId: {UserId}, RequestTime: {RequestTime}",
+            request.UserId, request.RequestTime);
+
+        var dalRequest = _mapper.Map<DAL.Song.ListSongsRequest>(request.Data);
+        dalRequest.UserId = request.UserId;
+
+        var result = await _songRepositoryAccess.ListAsync(dalRequest, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("ListAsync failed: {ErrorMessage}", result.ErrorMessage);
+            return new ManagerResponse<PagedResult<SongSummary>>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow
+            };
+        }
+
+        _logger.LogInformation("ListAsync succeeded, TotalCount: {TotalCount}", result.TotalCount);
+
+        return new ManagerResponse<PagedResult<SongSummary>>
+        {
+            Success = true,
+            Data = new PagedResult<SongSummary>
+            {
+                Items = _mapper.Map<List<SongSummary>>(result.Songs),
+                TotalCount = result.TotalCount,
+                Page = result.PageNumber,
+                PageSize = result.PageSize
+            },
+            ResponseTime = DateTime.UtcNow
+        };
+    }
 }

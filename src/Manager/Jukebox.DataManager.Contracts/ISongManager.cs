@@ -12,4 +12,6 @@ public interface ISongManager
     Task<ManagerResponse<SongDetails>> UpdateSongAsync(ManagerRequest<UpdateSongRequest> managerRequest, CancellationToken cancellationToken = default);
 
     Task<ManagerResponse<bool>> DeleteSongAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default);
+
+    Task<ManagerResponse<PagedResult<SongSummary>>> ListAsync(ManagerRequest<ListSongsRequest> request, CancellationToken cancellationToken = default);
 }

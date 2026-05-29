@@ -1,9 +1,10 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataManager.Grpc.Common;
 using Jukebox.DataManager.Grpc.Song;
-using Google.Protobuf.WellKnownTypes;
 using GrpcSong = Jukebox.DataManager.Grpc.Song;
 using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Song;
 
@@ -152,6 +153,52 @@ public class SongServiceImpl : SongService.SongServiceBase
             Success = response.Success,
             ErrorMessage = response.ErrorMessage ?? string.Empty,
         };
+    }
+
+    public override async Task<GrpcSong.ListSongsResponse> ListSongs(GrpcSong.ListSongsRequest request, ServerCallContext context)
+    {
+        var managerRequest = new ManagerRequest<ManagerContracts.ListSongsRequest>
+        {
+            UserId = request.UserId,
+            Data = new ManagerContracts.ListSongsRequest
+            {
+                PageNumber = request.Pagination.Page,
+                PageSize = request.Pagination.PageSize,
+                ArtistId = request.HasArtistId ? request.ArtistId : null,
+                AlbumId = request.HasAlbumId ? request.AlbumId : null,
+                GenreId = request.HasGenreId ? request.GenreId : null,
+                MinBpm = request.HasMinBpm ? request.MinBpm : null,
+                MaxBpm = request.HasMaxBpm ? request.MaxBpm : null,
+                TitleSearch = request.HasTitleSearch ? request.TitleSearch : null
+            }
+        };
+
+        var result = await _songManager.ListAsync(managerRequest, context.CancellationToken);
+
+        if (!result.Success)
+            throw new RpcException(new Status(StatusCode.Internal, result.ErrorMessage ?? "List failed"));
+
+        var response = new ListSongsResponse
+        {
+            Success = true,
+            Pagination = new PaginationResponse
+            {
+                TotalCount = result.Data!.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize,
+                TotalPages = (int)Math.Ceiling((double)result.Data.TotalCount / result.Data.PageSize)
+            }
+        };
+
+        response.Songs.AddRange(result.Data.Items.Select(s => new GrpcSong.SongSummary
+        {
+            Id = s.Id,
+            Title = s.Title,
+            Artist = s.Artist,
+            Album = s.Album
+        }));
+
+        return response;
     }
 
     private static GrpcSong.SongDetails MapToSongDetails(

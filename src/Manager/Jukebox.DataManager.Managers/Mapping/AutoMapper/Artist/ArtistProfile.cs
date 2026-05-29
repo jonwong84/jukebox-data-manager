@@ -13,6 +13,7 @@ namespace Jukebox.DataManager.Managers.Mapping.AutoMapper.Artist
             CreateMap<DAL.Album.AlbumSummary, BLL.Album.AlbumSummary>();
             CreateMap<BLL.Artist.AddArtistRequest, DAL.Artist.AddArtistRequest>();
             CreateMap<BLL.Artist.UpdateArtistRequest, DAL.Artist.UpdateArtistRequest>();
+            CreateMap<BLL.Artist.ListArtistsRequest, DAL.Artist.ListArtistsRequest>();
         }
     }
 }

@@ -12,4 +12,6 @@ public interface IAlbumManager
     Task<ManagerResponse<AlbumDetails>> UpdateAlbumAsync(ManagerRequest<UpdateAlbumRequest> managerRequest, CancellationToken cancellationToken = default);
 
     Task<ManagerResponse<bool>> DeleteAlbumAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default);
+
+    Task<ManagerResponse<PagedResult<AlbumSummary>>> ListAsync(ManagerRequest<ListAlbumsRequest> request, CancellationToken cancellationToken = default);
 }

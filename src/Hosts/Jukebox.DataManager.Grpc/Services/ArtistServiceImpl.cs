@@ -2,8 +2,9 @@
 using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Grpc.Artist;
-using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Artist;
+using Jukebox.DataManager.Grpc.Common;
 using GrpcArtist = Jukebox.DataManager.Grpc.Artist;
+using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Artist;
 
 namespace Jukebox.DataManager.Grpc.Services;
 
@@ -138,6 +139,45 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
             Success = response.Success,
             ErrorMessage = response.ErrorMessage ?? string.Empty,
         };
+    }
+
+    public override async Task<ListArtistsResponse> ListArtists(ListArtistsRequest request, ServerCallContext context)
+    {
+        var managerRequest = new ManagerRequest<ManagerContracts.ListArtistsRequest>
+        {
+            UserId = request.UserId,
+            Data = new ManagerContracts.ListArtistsRequest
+            {
+                PageNumber = request.Pagination.Page,
+                PageSize = request.Pagination.PageSize,
+                NameSearch = request.HasNameSearch ? request.NameSearch : null
+            }
+        };
+
+        var result = await _artistManager.ListAsync(managerRequest, context.CancellationToken);
+
+        if (!result.Success)
+            throw new RpcException(new Status(StatusCode.Internal, result.ErrorMessage ?? "List failed"));
+
+        var response = new ListArtistsResponse
+        {
+            Success = true,
+            Pagination = new PaginationResponse
+            {
+                TotalCount = result.Data!.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize,
+                TotalPages = (int)Math.Ceiling((double)result.Data.TotalCount / result.Data.PageSize)
+            }
+        };
+
+        response.Artists.AddRange(result.Data.Items.Select(a => new Common.ArtistSummary
+        {
+            Id = a.Id,
+            Name = a.Name
+        }));
+
+        return response;
     }
 
     private static GrpcArtist.ArtistDetails MapToArtistDetails(

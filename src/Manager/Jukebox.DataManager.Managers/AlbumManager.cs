@@ -147,4 +147,41 @@ public sealed class AlbumManager : IAlbumManager
             ResponseTime = DateTime.UtcNow,
         };
     }
+
+    public async Task<ManagerResponse<PagedResult<AlbumSummary>>> ListAsync(ManagerRequest<ListAlbumsRequest> request, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("ListAsync called by UserId: {UserId}, RequestTime: {RequestTime}",
+            request.UserId, request.RequestTime);
+
+        var dalRequest = _mapper.Map<DAL.Album.ListAlbumsRequest>(request.Data);
+        dalRequest.UserId = request.UserId;
+
+        var result = await _albumRepositoryAccess.ListAsync(dalRequest, cancellationToken);
+
+        if (!result.Success)
+        {
+            _logger.LogWarning("ListAsync failed: {ErrorMessage}", result.ErrorMessage);
+            return new ManagerResponse<PagedResult<AlbumSummary>>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage,
+                ResponseTime = DateTime.UtcNow
+            };
+        }
+
+        _logger.LogInformation("ListAsync succeeded, TotalCount: {TotalCount}", result.TotalCount);
+
+        return new ManagerResponse<PagedResult<AlbumSummary>>
+        {
+            Success = true,
+            Data = new PagedResult<AlbumSummary>
+            {
+                Items = _mapper.Map<List<AlbumSummary>>(result.Albums),
+                TotalCount = result.TotalCount,
+                Page = result.PageNumber,
+                PageSize = result.PageSize
+            },
+            ResponseTime = DateTime.UtcNow
+        };
+    }
 }

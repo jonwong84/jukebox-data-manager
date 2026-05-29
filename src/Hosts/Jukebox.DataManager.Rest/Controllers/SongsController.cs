@@ -1,6 +1,7 @@
 using Jukebox.DataManager.Contracts;
-using Jukebox.DataManager.Contracts.DataContracts.Song;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
+using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataManager.Managers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jukebox.DataManager.Rest.Controllers;
@@ -21,6 +22,23 @@ public class SongsController(ISongManager songManager) : ControllerBase
         };
         var response = await _songManager.FindByIdAsync(managerRequest, cancellationToken);
         return response.Success ? Ok(response.Data) : NotFound(response.ErrorMessage);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ListSongs([FromQuery] ListSongsRequest request, CancellationToken cancellationToken)
+    {
+        var managerRequest = new ManagerRequest<ListSongsRequest>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = request
+        };
+
+        var result = await _songManager.ListAsync(managerRequest, cancellationToken);
+
+        if (!result.Success)
+            return StatusCode(500, result.ErrorMessage);
+
+        return Ok(result.Data);
     }
 
     [HttpPost]

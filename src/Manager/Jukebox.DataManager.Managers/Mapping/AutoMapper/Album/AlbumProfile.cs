@@ -12,5 +12,6 @@ public class AlbumProfile : Profile
         CreateMap<DAL.Album.AlbumSummary, BLL.Album.AlbumSummary>();
         CreateMap<BLL.Album.AddAlbumRequest, DAL.Album.AddAlbumRequest>();
         CreateMap<BLL.Album.UpdateAlbumRequest, DAL.Album.UpdateAlbumRequest>();
+        CreateMap<BLL.Album.ListAlbumsRequest, DAL.Album.ListAlbumsRequest>();
     }
 }

@@ -1,61 +1,106 @@
+using Jukebox.DataManager.Contracts;
+using Jukebox.DataManager.Contracts.DataContracts.Album;
+using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Jukebox.DataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AlbumsController : ControllerBase
 {
-    //private readonly JukeboxDbContext _context;
+    private readonly IAlbumManager _albumManager;
+    private readonly ILogger<AlbumsController> _logger;
 
-    //public AlbumsController(JukeboxDbContext context)
-    //{
-    //    _context = context;
-    //}
+    public AlbumsController(IAlbumManager albumManager, ILogger<AlbumsController> logger)
+    {
+        _albumManager = albumManager;
+        _logger = logger;
+    }
 
-    //[HttpGet]
-    //public async Task<ActionResult<IEnumerable<Album>>> GetAlbums()
-    //{
-    //    return await _context.Albums.Include(a => a.Artist).ToListAsync();
-    //}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAlbum(int id, CancellationToken cancellationToken)
+    {
+        var request = new ManagerRequest<int>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = id
+        };
 
-    //[HttpGet("{id}")]
-    //public async Task<ActionResult<Album>> GetAlbum(int id)
-    //{
-    //    var album = await _context.Albums.Include(a => a.Artist).Include(a => a.Songs).FirstOrDefaultAsync(a => a.Id == id);
-    //    if (album == null) return NotFound();
-    //    return album;
-    //}
+        var result = await _albumManager.FindByIdAsync(request, cancellationToken);
 
-    //[HttpPost]
-    //public async Task<ActionResult<Album>> CreateAlbum(Album album)
-    //{
-    //    album.CreatedAt = DateTime.UtcNow;
-    //    _context.Albums.Add(album);
-    //    await _context.SaveChangesAsync();
-    //    return CreatedAtAction(nameof(GetAlbum), new { id = album.Id }, album);
-    //}
+        if (!result.Success)
+            return NotFound(result.ErrorMessage);
 
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> UpdateAlbum(int id, Album album)
-    //{
-    //    if (id != album.Id) return BadRequest();
-    //    var existing = await _context.Albums.FindAsync(id);
-    //    if (existing == null) return NotFound();
-    //    existing.Title = album.Title;
-    //    existing.ArtistId = album.ArtistId;
-    //    existing.ReleaseDate = album.ReleaseDate;
-    //    await _context.SaveChangesAsync();
-    //    return NoContent();
-    //}
+        return Ok(result.Data);
+    }
 
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> DeleteAlbum(int id)
-    //{
-    //    var album = await _context.Albums.FindAsync(id);
-    //    if (album == null) return NotFound();
-    //    _context.Albums.Remove(album);
-    //    await _context.SaveChangesAsync();
-    //    return NoContent();
-    //}
+    [HttpGet]
+    public async Task<IActionResult> ListAlbums([FromQuery] ListAlbumsRequest request, CancellationToken cancellationToken)
+    {
+        var managerRequest = new ManagerRequest<ListAlbumsRequest>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = request
+        };
+
+        var result = await _albumManager.ListAsync(managerRequest, cancellationToken);
+
+        if (!result.Success)
+            return StatusCode(500, result.ErrorMessage);
+
+        return Ok(result.Data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddAlbum([FromBody] AddAlbumRequest request, CancellationToken cancellationToken)
+    {
+        var managerRequest = new ManagerRequest<AddAlbumRequest>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = request
+        };
+
+        var result = await _albumManager.AddAlbumAsync(managerRequest, cancellationToken);
+
+        if (!result.Success)
+            return BadRequest(result.ErrorMessage);
+
+        return CreatedAtAction(nameof(GetAlbum), new { id = result.Data }, result.Data);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAlbum(int id, [FromBody] UpdateAlbumRequest request, CancellationToken cancellationToken)
+    {
+        if (id != request.Id)
+            return BadRequest("Route id does not match request id");
+
+        var managerRequest = new ManagerRequest<UpdateAlbumRequest>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = request
+        };
+
+        var result = await _albumManager.UpdateAlbumAsync(managerRequest, cancellationToken);
+
+        if (!result.Success)
+            return BadRequest(result.ErrorMessage);
+
+        return Ok(result.Data);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAlbum(int id, CancellationToken cancellationToken)
+    {
+        var request = new ManagerRequest<int>
+        {
+            UserId = HttpContext.TraceIdentifier,
+            Data = id
+        };
+
+        var result = await _albumManager.DeleteAlbumAsync(request, cancellationToken);
+
+        if (!result.Success)
+            return BadRequest(result.ErrorMessage);
+
+        return NoContent();
+    }
 }
