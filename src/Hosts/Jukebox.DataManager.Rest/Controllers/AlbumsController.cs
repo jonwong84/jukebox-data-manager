@@ -5,16 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AlbumsController : ControllerBase
+public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsController> logger) : ControllerBase
 {
-    private readonly IAlbumManager _albumManager;
-    private readonly ILogger<AlbumsController> _logger;
-
-    public AlbumsController(IAlbumManager albumManager, ILogger<AlbumsController> logger)
-    {
-        _albumManager = albumManager;
-        _logger = logger;
-    }
+    private readonly IAlbumManager _albumManager = albumManager;
+    private readonly ILogger<AlbumsController> _logger = logger;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAlbum(int id, CancellationToken cancellationToken)
@@ -64,7 +58,9 @@ public class AlbumsController : ControllerBase
         if (!result.Success)
             return BadRequest(result.ErrorMessage);
 
-        return CreatedAtAction(nameof(GetAlbum), new { id = result.Data }, result.Data);
+        return result.Success
+            ? CreatedAtAction(nameof(GetAlbum), new { id = result.Data!.Id }, result.Data)
+            : BadRequest(result.ErrorMessage);
     }
 
     [HttpPut("{id}")]

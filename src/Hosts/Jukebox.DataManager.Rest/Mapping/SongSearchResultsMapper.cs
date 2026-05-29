@@ -5,9 +5,9 @@ namespace Jukebox.DataManager.Rest.Mapping
 {
     public static class SongSearchResultsMapper
     {
-        public static SongSearchResponse MapSearchResults(SearchResponse response)
+        public static SearchResponse MapSearchResults(SearchResponse response)
         {
-            return new SongSearchResponse
+            return new SearchResponse
             {
             };
         }

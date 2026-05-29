@@ -8,9 +8,10 @@ namespace Jukebox.DataManager.Rest.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SongsController(ISongManager songManager) : ControllerBase
+public class SongsController(ISongManager songManager, ILogger<SongsController> logger) : ControllerBase
 {
     private readonly ISongManager _songManager = songManager;
+    private readonly ILogger<SongsController> _logger = logger;
 
     [HttpGet("{id}")]
     public async Task<ActionResult<SongDetails>> GetSong(int id, CancellationToken cancellationToken)
