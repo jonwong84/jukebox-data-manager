@@ -14,7 +14,7 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
     private readonly ILogger<SongsController> _logger = logger;
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SongDetails>> GetSong(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSong(int id, CancellationToken cancellationToken)
     {
         var managerRequest = new ManagerRequest<int>
         {
@@ -43,7 +43,7 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
     }
 
     [HttpPost]
-    public async Task<ActionResult<SongSummary>> AddSong(AddSongRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddSong(AddSongRequest request, CancellationToken cancellationToken)
     {
         var managerRequest = new ManagerRequest<AddSongRequest>
         {
@@ -57,20 +57,27 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SongDetails>> UpdateSong(int id, UpdateSongRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateSong(int id, [FromBody] UpdateSongRequest request, CancellationToken cancellationToken)
     {
-        request.Id = id;
+        if (id != request.Id)
+            return BadRequest("Route id does not match request id");
+
         var managerRequest = new ManagerRequest<UpdateSongRequest>
         {
-            UserId = User.Identity?.Name ?? HttpContext.TraceIdentifier,
+            UserId = HttpContext.TraceIdentifier,
             Data = request
         };
-        var response = await _songManager.UpdateSongAsync(managerRequest, cancellationToken);
-        return response.Success ? Ok(response.Data) : BadRequest(response.ErrorMessage);
+
+        var result = await _songManager.UpdateSongAsync(managerRequest, cancellationToken);
+
+        if (!result.Success)
+            return BadRequest(result.ErrorMessage);
+
+        return Ok(result.Data);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteSong(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteSong(int id, CancellationToken cancellationToken)
     {
         var managerRequest = new ManagerRequest<int>
         {

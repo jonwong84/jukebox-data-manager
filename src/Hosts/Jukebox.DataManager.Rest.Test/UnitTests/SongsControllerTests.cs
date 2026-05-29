@@ -38,8 +38,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.GetSong(1, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongDetails>>(result);
-            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(songDetails, okResult.Value);
         }
 
@@ -52,8 +51,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.GetSong(1, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongDetails>>(result);
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("Song not found", notFoundResult.Value);
         }
 
@@ -103,8 +101,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.AddSong(new AddSongRequest(), CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongSummary>>(result);
-            var createdResult = Assert.IsType<CreatedAtActionResult>(actionResult.Result);
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal(nameof(_controller.GetSong), createdResult.ActionName);
             Assert.Equal(songSummary, createdResult.Value);
         }
@@ -118,8 +115,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.AddSong(new AddSongRequest(), CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongSummary>>(result);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Artist not found", badRequestResult.Value);
         }
 
@@ -134,8 +130,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.UpdateSong(1, new UpdateSongRequest { Id = 1 }, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongDetails>>(result);
-            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(songDetails, okResult.Value);
         }
 
@@ -144,11 +139,9 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
         {
             var result = await _controller.UpdateSong(1, new UpdateSongRequest { Id = 2 }, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongDetails>>(result);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Route id does not match request id", badRequestResult.Value);
         }
-
         [Fact]
         public async Task UpdateSong_ReturnsBadRequest_WhenUpdateFails()
         {
@@ -158,8 +151,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.UpdateSong(1, new UpdateSongRequest { Id = 1 }, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult<SongDetails>>(result);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Song not found", badRequestResult.Value);
         }
 
@@ -173,8 +165,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.DeleteSong(1, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult>(result, exactMatch: false);
-            Assert.IsType<NoContentResult>(actionResult);
+            Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
@@ -186,8 +177,7 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
 
             var result = await _controller.DeleteSong(1, CancellationToken.None);
 
-            var actionResult = Assert.IsType<ActionResult>(result, exactMatch: false);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Song not found", badRequestResult.Value);
         }
     }
