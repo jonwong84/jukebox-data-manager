@@ -1,35 +1,255 @@
 version: 2.1
 
 orbs:
-  dotnet: circleci/dotnet@2.5
-  snyk: snyk/snyk@2.0
+  dotnet: circleci/dotnet@2.2.0
+
+executors:
+  dotnet-executor:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
+    resource_class: medium
+
+parameters:
+  grpc-image-name:
+    type: string
+    default: "ghcr.io/jonwong84/jukebox-datamanager-grpc"
+  rest-image-name:
+    type: string
+    default: "ghcr.io/jonwong84/jukebox-datamanager-rest"
 
 jobs:
-  build_and_scan:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0
+  build-and-test-grpc:
+    executor: dotnet-executor
     steps:
       - checkout
-      - dotnet/restore
-      - snyk/scan:
-          severity-threshold: high
-      - dotnet/build
+      - run:
+          name: Configure NuGet source
+          command: |
+            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
+              --name github \
+              --username jonwong84 \
+              --password $GITHUB_TOKEN \
+              --store-password-in-clear-text
+      - run:
+          name: Restore
+          command: dotnet restore src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj
+      - run:
+          name: Build
+          command: dotnet build src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj --no-restore --configuration Release
+      - run:
+          name: Restore test project
+          command: dotnet restore src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj
+      - run:
+          name: Test
+          command: |
+            dotnet test src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj \
+              --no-restore \
+              --configuration Release \
+              --logger "junit;LogFilePath=/tmp/test-results/grpc/results.xml" \
+              /p:CollectCoverage=true \
+              /p:CoverletOutputFormat=opencover \
+              /p:CoverletOutput=/tmp/coverage/grpc/
+      - store_test_results:
+          path: /tmp/test-results/grpc
+      - persist_to_workspace:
+          root: /tmp/coverage
+          paths:
+            - grpc
 
-  test_integration:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0
-      - image: mcr.microsoft.com/mssql/server:2022-latest # Service container
-        environment:
-          ACCEPT_EULA: "Y"
-          MSSQL_SA_PASSWORD: "YourStrongPassword!"
+  build-and-test-rest:
+    executor: dotnet-executor
     steps:
       - checkout
-      - run: dotnet test --filter Category=Integration
+      - run:
+          name: Configure NuGet source
+          command: |
+            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
+              --name github \
+              --username jonwong84 \
+              --password $GITHUB_TOKEN \
+              --store-password-in-clear-text
+      - run:
+          name: Restore
+          command: dotnet restore src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj
+      - run:
+          name: Build
+          command: dotnet build src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj --no-restore --configuration Release
+      - run:
+          name: Restore test project
+          command: dotnet restore src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj
+      - run:
+          name: Test
+          command: |
+            dotnet test src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj \
+              --no-restore \
+              --configuration Release \
+              --logger "junit;LogFilePath=/tmp/test-results/rest/results.xml" \
+              /p:CollectCoverage=true \
+              /p:CoverletOutputFormat=opencover \
+              /p:CoverletOutput=/tmp/coverage/rest/
+      - store_test_results:
+          path: /tmp/test-results/rest
+      - persist_to_workspace:
+          root: /tmp/coverage
+          paths:
+            - rest
+
+  sonar-scan:
+    executor: dotnet-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/coverage
+      - run:
+          name: Configure NuGet source
+          command: |
+            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
+              --name github \
+              --username jonwong84 \
+              --password $GITHUB_TOKEN \
+              --store-password-in-clear-text
+      - run:
+          name: Install SonarScanner
+          command: dotnet tool install --global dotnet-sonarscanner
+      - run:
+          name: Install coverage report tool
+          command: dotnet tool install --global dotnet-coverage
+      - run:
+          name: Add dotnet tools to PATH
+          command: echo 'export PATH="$PATH:/root/.dotnet/tools"' >> $BASH_ENV
+      - run:
+          name: Restore all
+          command: dotnet restore jukebox-data-manager.sln
+      - run:
+          name: Begin SonarScan
+          command: |
+            SONAR_EXTRA_ARGS=""
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              PR_NUMBER=$(echo $CIRCLE_PULL_REQUEST | sed 's/.*\/pull\///')
+              SONAR_EXTRA_ARGS="/d:sonar.pullrequest.key=$PR_NUMBER \
+                /d:sonar.pullrequest.branch=$CIRCLE_BRANCH \
+                /d:sonar.pullrequest.base=$CIRCLE_BASE_REVISION"
+            fi
+            dotnet sonarscanner begin \
+              /k:"jonwong84_jukebox-data-manager" \
+              /o:"jonwong84" \
+              /d:sonar.token="$SONAR_TOKEN" \
+              /d:sonar.host.url="https://sonarcloud.io" \
+              /d:sonar.cs.opencover.reportsPaths="/tmp/coverage/grpc/*.xml,/tmp/coverage/rest/*.xml" \
+              $SONAR_EXTRA_ARGS
+      - run:
+          name: Build for analysis
+          command: dotnet build jukebox-data-manager.sln --configuration Release
+      - run:
+          name: End SonarScan
+          command: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+
+  publish-grpc-image:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: Log in to GHCR
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u jonwong84 --password-stdin
+      - run:
+          name: Determine image tag
+          command: |
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              IMAGE_TAG=$CIRCLE_SHA1
+            else
+              IMAGE_TAG="beta-$CIRCLE_SHA1"
+            fi
+            echo "export IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
+      - run:
+          name: Build Docker image
+          command: |
+            docker build \
+              -f src/Hosts/Jukebox.DataManager.Grpc/Dockerfile \
+              -t << pipeline.parameters.grpc-image-name >>:$IMAGE_TAG \
+              -t << pipeline.parameters.grpc-image-name >>:latest \
+              --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+              .
+      - run:
+          name: Push Docker image
+          command: |
+            docker push << pipeline.parameters.grpc-image-name >>:$IMAGE_TAG
+            docker push << pipeline.parameters.grpc-image-name >>:latest
+
+  publish-rest-image:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: Log in to GHCR
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u jonwong84 --password-stdin
+      - run:
+          name: Determine image tag
+          command: |
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              IMAGE_TAG=$CIRCLE_SHA1
+            else
+              IMAGE_TAG="beta-$CIRCLE_SHA1"
+            fi
+            echo "export IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
+      - run:
+          name: Build Docker image
+          command: |
+            docker build \
+              -f src/Hosts/Jukebox.DataManager.Rest/Dockerfile \
+              -t << pipeline.parameters.rest-image-name >>:$IMAGE_TAG \
+              -t << pipeline.parameters.rest-image-name >>:latest \
+              --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+              .
+      - run:
+          name: Push Docker image
+          command: |
+            docker push << pipeline.parameters.rest-image-name >>:$IMAGE_TAG
+            docker push << pipeline.parameters.rest-image-name >>:latest
 
 workflows:
-  quality_gate:
+  build-test-scan-publish:
     jobs:
-      - build_and_scan
-      - test_integration:
+      - build-and-test-grpc:
+          context: global-v1
+          filters:
+            branches:
+              only:
+                - main
+                - /feature\/.*/
+      - build-and-test-rest:
+          context: global-v1
+          filters:
+            branches:
+              only:
+                - main
+                - /feature\/.*/
+      - sonar-scan:
+          context: global-v1
           requires:
-            - build_and_scan
+            - build-and-test-grpc
+            - build-and-test-rest
+          filters:
+            branches:
+              only:
+                - main
+                - /feature\/.*/
+      - publish-grpc-image:
+          context: global-v1
+          requires:
+            - sonar-scan
+          filters:
+            branches:
+              only:
+                - main
+                - /feature\/.*/
+      - publish-rest-image:
+          context: global-v1
+          requires:
+            - sonar-scan
+          filters:
+            branches:
+              only:
+                - main
+                - /feature\/.*/
