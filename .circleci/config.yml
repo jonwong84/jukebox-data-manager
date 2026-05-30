@@ -34,6 +34,10 @@ jobs:
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
               /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - src/Hosts/Jukebox.DataManager.Grpc.Test/coverage.opencover.xml
 
   build-and-test-rest:
     docker:
@@ -68,12 +72,18 @@ jobs:
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
               /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - src/Hosts/Jukebox.DataManager.Rest.Test/coverage.opencover.xml
 
   sonar-scan:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Install SonarScanner
           command: |
