@@ -199,16 +199,19 @@ jobs:
             docker push ghcr.io/jonwong84/jukebox-datamanager-rest:$IMAGE_TAG
             docker push ghcr.io/jonwong84/jukebox-datamanager-rest:latest
 
+
 workflows:
   build-test-scan-publish:
     jobs:
       - build-and-test-grpc:
+          context: global-v1
           filters:
             branches:
               only:
                 - main
                 - /^feature\/.*/
       - build-and-test-rest:
+          context: global-v1
           filters:
             branches:
               only:
