@@ -33,7 +33,7 @@ jobs:
               --no-restore \
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/"
+              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/coverage"
       - persist_to_workspace:
           root: .
           paths:
@@ -71,7 +71,7 @@ jobs:
               --no-restore \
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/"
+              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/coverage"
       - persist_to_workspace:
           root: .
           paths:
