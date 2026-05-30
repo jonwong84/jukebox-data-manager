@@ -1,148 +1,129 @@
 version: 2.1
 
-orbs:
-  dotnet: circleci/dotnet@2.2.0
-
-executors:
-  dotnet-executor:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0
-    resource_class: medium
-
-parameters:
-  grpc-image-name:
-    type: string
-    default: "ghcr.io/jonwong84/jukebox-datamanager-grpc"
-  rest-image-name:
-    type: string
-    default: "ghcr.io/jonwong84/jukebox-datamanager-rest"
-
 jobs:
   build-and-test-grpc:
-    executor: dotnet-executor
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - checkout
       - run:
-          name: Configure NuGet source
+          name: Restore dependencies
           command: |
-            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
-              --name github \
-              --username jonwong84 \
-              --password $GITHUB_TOKEN \
-              --store-password-in-clear-text
-      - run:
-          name: Restore
-          command: dotnet restore src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj
+            dotnet restore "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj"
       - run:
           name: Build
-          command: dotnet build src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj --no-restore --configuration Release
-      - run:
-          name: Restore test project
-          command: dotnet restore src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj
+          command: |
+            dotnet build "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj" \
+              --configuration Release \
+              --no-restore
       - run:
           name: Test
           command: |
-            dotnet test src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj \
-              --no-restore \
+            dotnet test "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
               --configuration Release \
-              --logger "junit;LogFilePath=/tmp/test-results/grpc/results.xml" \
+              --no-restore \
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=/tmp/coverage/grpc/
-      - store_test_results:
-          path: /tmp/test-results/grpc
-      - persist_to_workspace:
-          root: /tmp/coverage
-          paths:
-            - grpc
+              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/"
 
   build-and-test-rest:
-    executor: dotnet-executor
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - checkout
       - run:
-          name: Configure NuGet source
+          name: Restore dependencies
           command: |
-            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
-              --name github \
-              --username jonwong84 \
-              --password $GITHUB_TOKEN \
-              --store-password-in-clear-text
-      - run:
-          name: Restore
-          command: dotnet restore src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj
+            dotnet restore "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj"
       - run:
           name: Build
-          command: dotnet build src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj --no-restore --configuration Release
-      - run:
-          name: Restore test project
-          command: dotnet restore src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj
+          command: |
+            dotnet build "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" \
+              --configuration Release \
+              --no-restore
       - run:
           name: Test
           command: |
-            dotnet test src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj \
-              --no-restore \
+            dotnet test "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
               --configuration Release \
-              --logger "junit;LogFilePath=/tmp/test-results/rest/results.xml" \
+              --no-restore \
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=/tmp/coverage/rest/
-      - store_test_results:
-          path: /tmp/test-results/rest
-      - persist_to_workspace:
-          root: /tmp/coverage
-          paths:
-            - rest
+              /p:CoverletOutput="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/"
 
   sonar-scan:
-    executor: dotnet-executor
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/coverage
-      - run:
-          name: Configure NuGet source
-          command: |
-            dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
-              --name github \
-              --username jonwong84 \
-              --password $GITHUB_TOKEN \
-              --store-password-in-clear-text
       - run:
           name: Install SonarScanner
-          command: dotnet tool install --global dotnet-sonarscanner
+          command: |
+            dotnet tool install --global dotnet-sonarscanner
+            export PATH="$PATH:/root/.dotnet/tools"
+            echo 'export PATH="$PATH:/root/.dotnet/tools"' >> $BASH_ENV
       - run:
-          name: Install coverage report tool
-          command: dotnet tool install --global dotnet-coverage
-      - run:
-          name: Add dotnet tools to PATH
-          command: echo 'export PATH="$PATH:/root/.dotnet/tools"' >> $BASH_ENV
-      - run:
-          name: Restore all
-          command: dotnet restore jukebox-data-manager.sln
+          name: Restore dependencies
+          command: |
+            dotnet restore "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj"
       - run:
           name: Begin SonarScan
           command: |
-            SONAR_EXTRA_ARGS=""
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              PR_NUMBER=$(echo $CIRCLE_PULL_REQUEST | sed 's/.*\/pull\///')
-              SONAR_EXTRA_ARGS="/d:sonar.pullrequest.key=$PR_NUMBER \
-                /d:sonar.pullrequest.branch=$CIRCLE_BRANCH \
-                /d:sonar.pullrequest.base=$CIRCLE_BASE_REVISION"
-            fi
+            PR_NUMBER=$(echo "$CIRCLE_PULL_REQUEST" | grep -oE '[0-9]+$')
+            GRPC_COVERAGE="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/coverage.opencover.xml"
+            REST_COVERAGE="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/coverage.opencover.xml"
             dotnet sonarscanner begin \
               /k:"jonwong84_jukebox-data-manager" \
               /o:"jonwong84" \
-              /d:sonar.token="$SONAR_TOKEN" \
               /d:sonar.host.url="https://sonarcloud.io" \
-              /d:sonar.cs.opencover.reportsPaths="/tmp/coverage/grpc/*.xml,/tmp/coverage/rest/*.xml" \
-              $SONAR_EXTRA_ARGS
+              /d:sonar.token="$SONAR_TOKEN" \
+              /d:sonar.pullrequest.key="$PR_NUMBER" \
+              /d:sonar.pullrequest.branch="$CIRCLE_BRANCH" \
+              /d:sonar.pullrequest.base="main" \
+              /d:sonar.cs.opencover.reportsPaths="$GRPC_COVERAGE,$REST_COVERAGE" \
+              /d:sonar.tests="src/Hosts/Jukebox.DataManager.Grpc.Test,src/Hosts/Jukebox.DataManager.Rest.Test" \
+              /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs"
       - run:
-          name: Build for analysis
-          command: dotnet build jukebox-data-manager.sln --configuration Release
+          name: Build
+          command: |
+            dotnet build "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" \
+              --configuration Release \
+              --no-restore
       - run:
           name: End SonarScan
-          command: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+          command: |
+            dotnet sonarscanner end \
+              /d:sonar.token="$SONAR_TOKEN"
 
   publish-grpc-image:
     machine:
@@ -166,15 +147,15 @@ jobs:
           command: |
             docker build \
               -f src/Hosts/Jukebox.DataManager.Grpc/Dockerfile \
-              -t << pipeline.parameters.grpc-image-name >>:$IMAGE_TAG \
-              -t << pipeline.parameters.grpc-image-name >>:latest \
+              -t ghcr.io/jonwong84/jukebox-datamanager-grpc:$IMAGE_TAG \
+              -t ghcr.io/jonwong84/jukebox-datamanager-grpc:latest \
               --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
               .
       - run:
           name: Push Docker image
           command: |
-            docker push << pipeline.parameters.grpc-image-name >>:$IMAGE_TAG
-            docker push << pipeline.parameters.grpc-image-name >>:latest
+            docker push ghcr.io/jonwong84/jukebox-datamanager-grpc:$IMAGE_TAG
+            docker push ghcr.io/jonwong84/jukebox-datamanager-grpc:latest
 
   publish-rest-image:
     machine:
@@ -198,33 +179,31 @@ jobs:
           command: |
             docker build \
               -f src/Hosts/Jukebox.DataManager.Rest/Dockerfile \
-              -t << pipeline.parameters.rest-image-name >>:$IMAGE_TAG \
-              -t << pipeline.parameters.rest-image-name >>:latest \
+              -t ghcr.io/jonwong84/jukebox-datamanager-rest:$IMAGE_TAG \
+              -t ghcr.io/jonwong84/jukebox-datamanager-rest:latest \
               --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
               .
       - run:
           name: Push Docker image
           command: |
-            docker push << pipeline.parameters.rest-image-name >>:$IMAGE_TAG
-            docker push << pipeline.parameters.rest-image-name >>:latest
+            docker push ghcr.io/jonwong84/jukebox-datamanager-rest:$IMAGE_TAG
+            docker push ghcr.io/jonwong84/jukebox-datamanager-rest:latest
 
 workflows:
   build-test-scan-publish:
     jobs:
       - build-and-test-grpc:
-          context: global-v1
           filters:
             branches:
               only:
                 - main
-                - /feature\/.*/
+                - /^feature\/.*/
       - build-and-test-rest:
-          context: global-v1
           filters:
             branches:
               only:
                 - main
-                - /feature\/.*/
+                - /^feature\/.*/
       - sonar-scan:
           context: global-v1
           requires:
@@ -233,23 +212,24 @@ workflows:
           filters:
             branches:
               only:
-                - main
-                - /feature\/.*/
+                - /^feature\/.*/
       - publish-grpc-image:
           context: global-v1
           requires:
-            - sonar-scan
+            - build-and-test-grpc
+            - build-and-test-rest
           filters:
             branches:
               only:
                 - main
-                - /feature\/.*/
+                - /^feature\/.*/
       - publish-rest-image:
           context: global-v1
           requires:
-            - sonar-scan
+            - build-and-test-grpc
+            - build-and-test-rest
           filters:
             branches:
               only:
                 - main
-                - /feature\/.*/
+                - /^feature\/.*/
