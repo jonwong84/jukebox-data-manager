@@ -6,11 +6,8 @@ WORKDIR /src
 # Copy solution and project files for layer-cached restore
 COPY Jukebox.DataManager.slnx ./
 COPY src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj src/Hosts/Jukebox.DataManager.Grpc/
-COPY src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj src/Hosts/Jukebox.DataManager.Grpc.Test/
 COPY src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj src/Manager/Jukebox.DataManager.Managers/
 COPY src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj src/Manager/Jukebox.DataManager.Contracts/
-COPY src/Rest/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj src/Rest/Jukebox.DataManager.Rest/
-COPY src/Rest/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj src/Rest/Jukebox.DataManager.Rest.Test/
 
 # Configure GitHub Packages NuGet source and restore
 RUN dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
