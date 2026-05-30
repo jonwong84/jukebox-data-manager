@@ -1,4 +1,4 @@
-﻿using Jukebox.DataManager.Contracts;
+﻿using Jukebox.DataManager.Managers.Interfaces;
 using Jukebox.DataManager.Managers.Mapping.AutoMapper.Album;
 using Jukebox.DataManager.Managers.Mapping.AutoMapper.Artist;
 using Jukebox.DataManager.Managers.Mapping.AutoMapper.Song;

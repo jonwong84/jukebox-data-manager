@@ -1,7 +1,7 @@
 ﻿using Jukebox.DataManager.Contracts.DataContracts.Artist;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 
-namespace Jukebox.DataManager.Contracts;
+namespace Jukebox.DataManager.Managers.Interfaces;
 
 public interface IArtistManager
 {

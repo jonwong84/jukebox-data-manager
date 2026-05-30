@@ -1,8 +1,8 @@
 using AutoMapper;
 using Jukebox.DataAccess.Interfaces;
-using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataManager.Managers.Interfaces;
 using Microsoft.Extensions.Logging;
 using DAL = Jukebox.DataAccess.Contracts.DataContracts;
 

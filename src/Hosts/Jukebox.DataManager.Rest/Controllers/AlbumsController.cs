@@ -1,6 +1,6 @@
-using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Album;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
+using Jukebox.DataManager.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

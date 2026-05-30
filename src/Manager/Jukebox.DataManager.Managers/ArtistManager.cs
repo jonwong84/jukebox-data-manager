@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Jukebox.DataAccess.Interfaces;
-using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Artist;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Microsoft.Extensions.Logging;
 using DAL = Jukebox.DataAccess.Contracts.DataContracts;
 using BLL = Jukebox.DataManager.Contracts.DataContracts;
+using Jukebox.DataManager.Managers.Interfaces;
 
 namespace Jukebox.DataManager.Managers;
 

@@ -1,7 +1,7 @@
 ﻿using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Search;
 
-namespace Jukebox.DataManager.Contracts
+namespace Jukebox.DataManager.Managers.Interfaces
 {
     public interface ISongSearchManager
     {

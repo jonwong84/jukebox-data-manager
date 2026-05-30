@@ -1,10 +1,10 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
 using Jukebox.DataManager.Grpc.Common;
 using Jukebox.DataManager.Grpc.Song;
+using Jukebox.DataManager.Managers.Interfaces;
 using GrpcSong = Jukebox.DataManager.Grpc.Song;
 using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Song;
 

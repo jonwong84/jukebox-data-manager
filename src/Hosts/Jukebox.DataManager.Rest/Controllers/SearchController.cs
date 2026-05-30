@@ -1,7 +1,7 @@
-﻿using Jukebox.DataManager.Contracts;
-using Jukebox.DataManager.Contracts.DataContracts.Common;
+﻿using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Search;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataManager.Managers.Interfaces;
 using Jukebox.DataManager.Rest.Mapping;
 using Microsoft.AspNetCore.Mvc;
 

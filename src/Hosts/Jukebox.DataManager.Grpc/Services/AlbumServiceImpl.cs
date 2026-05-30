@@ -1,8 +1,8 @@
 ﻿using Grpc.Core;
-using Jukebox.DataManager.Contracts;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Grpc.Album;
 using Jukebox.DataManager.Grpc.Common;
+using Jukebox.DataManager.Managers.Interfaces;
 using GrpcAlbum = Jukebox.DataManager.Grpc.Album;
 using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Album;
 
