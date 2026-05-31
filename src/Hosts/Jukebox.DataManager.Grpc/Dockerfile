@@ -32,7 +32,6 @@ COPY --from=build /app/publish ./
 
 # gRPC ports (matches appsettings.Development.json)
 EXPOSE 5037
-EXPOSE 7109
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 
