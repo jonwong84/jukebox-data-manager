@@ -419,3 +419,4 @@ FodyWeavers.xsd
 
 # Local Development Settings
 local-values.json
+/local-values.yaml
