@@ -107,7 +107,7 @@ The services are exposed as NodePort but require `kubectl port-forward` to reach
 ### REST host
 
 ```powershell
-kubectl port-forward pod/<rest-pod-name> 5035:8080
+kubectl port-forward pod/<rest-pod-name> 5035:5035
 ```
 
 The REST API is then available at `http://localhost:5035`. Example:
@@ -120,6 +120,18 @@ curl http://localhost:5035/api/artists -UseBasicParsing
 
 ```powershell
 kubectl port-forward pod/<grpc-pod-name> 5037:5037
+```
+
+The gRPC API is then available at `localhost:5037`. Use [grpcurl](https://github.com/fullstorydev/grpcurl) to test. List available services:
+
+```powershell
+grpcurl -plaintext localhost:5037 list
+```
+
+Example call:
+
+```powershell
+grpcurl -plaintext localhost:5037 jukebox.artist.ArtistService/ListArtists
 ```
 
 > To get the current pod names: `kubectl get pods`
