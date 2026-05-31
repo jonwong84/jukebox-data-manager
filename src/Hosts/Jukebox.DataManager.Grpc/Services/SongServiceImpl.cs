@@ -162,8 +162,8 @@ public class SongServiceImpl : SongService.SongServiceBase
             UserId = request.UserId,
             Data = new ManagerContracts.ListSongsRequest
             {
-                PageNumber = request.Pagination.Page,
-                PageSize = request.Pagination.PageSize,
+                PageNumber = request.Pagination?.Page ?? 1,
+                PageSize = request.Pagination?.PageSize ?? 10,
                 ArtistId = request.HasArtistId ? request.ArtistId : null,
                 AlbumId = request.HasAlbumId ? request.AlbumId : null,
                 GenreId = request.HasGenreId ? request.GenreId : null,

@@ -148,8 +148,8 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
             UserId = request.UserId,
             Data = new ManagerContracts.ListArtistsRequest
             {
-                PageNumber = request.Pagination.Page,
-                PageSize = request.Pagination.PageSize,
+                PageNumber = request.Pagination?.Page ?? 1,
+                PageSize = request.Pagination?.PageSize ?? 10,
                 NameSearch = request.HasNameSearch ? request.NameSearch : null
             }
         };

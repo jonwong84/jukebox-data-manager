@@ -154,8 +154,8 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
             UserId = request.UserId,
             Data = new ManagerContracts.ListAlbumsRequest
             {
-                PageNumber = request.Pagination.Page,
-                PageSize = request.Pagination.PageSize,
+                PageNumber = request.Pagination?.Page ?? 1,
+                PageSize = request.Pagination?.PageSize ?? 10,
                 ArtistId = request.HasArtistId ? request.ArtistId : null,
                 GenreId = request.HasGenreId ? request.GenreId : null,
                 TitleSearch = request.HasTitleSearch ? request.TitleSearch : null
