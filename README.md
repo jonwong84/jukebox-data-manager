@@ -36,3 +36,8 @@ To run this project, you will need to do the following:
   [System.Environment]::SetEnvironmentVariable("JUKEBOX_DB_CONNECTION_STRING", "Server=localhost,1433;Database=Jukebox;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;", "User")
   ```
 - In Visual Studio, run either `Jukebox.DataManager.Grpc` for the gRPC host, or `Jukebox.DataManager.Rest` for the REST host.
+
+## Running In Helm / Docker
+
+- Follow the Local Setup instructions.
+- Set a new environmental variable called `GITHUB_TOKEN` using a Personal Access Token with access to the private NuGet feed.

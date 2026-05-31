@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jukebox-data-manager-grpc.fullname" . }}
+  labels:
+    {{- include "jukebox-data-manager-grpc.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jukebox-data-manager-grpc.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jukebox-data-manager-grpc.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc-http2
+              containerPort: {{ .Values.service.http2Port }}
+              protocol: TCP
+            - name: grpc-h1h2
+              containerPort: {{ .Values.service.http1AndHttp2Port }}
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.env.ASPNETCORE_ENVIRONMENT | quote }}
+            - name: JUKEBOX_DB_CONNECTION_STRING
+              value: {{ .Values.env.JUKEBOX_DB_CONNECTION_STRING | quote }}

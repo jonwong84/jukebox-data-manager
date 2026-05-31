@@ -18,11 +18,7 @@ var app = builder.Build();
 app.MapGrpcService<SongServiceImpl>();
 app.MapGrpcService<ArtistServiceImpl>();
 app.MapGrpcService<AlbumServiceImpl>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapGrpcReflectionService();
-}
+app.MapGrpcReflectionService();
 
 app.MapGet("/", () => "gRPC endpoint. Use a gRPC client to communicate.");
 

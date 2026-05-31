@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/jonwong84/jukebox-datamanager-rest
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 5035
+  nodePort: 30535
+
+env:
+  ASPNETCORE_ENVIRONMENT: Production
+  JUKEBOX_DB_CONNECTION_STRING: ""
