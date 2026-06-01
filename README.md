@@ -1,42 +1,101 @@
-# jukebox-data-manager
+# Jukebox Data Manager
 
-This project provides the required workflows to provide song metadata to different applications, along with two separate API hosts that serve requests and responses. These APIs provides access points that allow a client application to manage metadata for music. It is responsible for the addition, upkeep, and deletion of metadata for individual songs, artists, and albums.
+Music metadata management layer for the Jukebox platform. Exposes two hosts:
 
-## Architectural Design
+- **REST** (`Jukebox.DataManager.Rest`) — HTTP/1.1 JSON API for end-user-facing clients, secured with JWT bearer tokens
+- **gRPC** (`Jukebox.DataManager.Grpc`) — high-performance RPC API for internal service-to-service communication, secured with API keys
 
-The Song Metadata API project is designed with five interconnecting layers: Client Applications -> API Hosts -> Manager Layer -> Access Layer -> Storage. It features a gRPC host and a REST host to serve the needs of different client applications.
+Both hosts sit on top of a shared manager layer (`Jukebox.DataManager.Managers`) and consume the `jukebox-data-access` NuGet packages for all database operations.
 
-Diagram for visual:
+---
 
-![Song metadata API architecture diagram showing a layered system: Clients layer with two client boxes labeled rRPC client generated stub consumer and REST client standard HTTP consumer; API hosts layer with rRPC host procedure-based endpoints and REST host resource-based endpoints; Business logic manager layer labeled Manager layer CRUD orchestration, validation, rules; Data logic access layer labeled Access layer Queries, writes, data mapping; and a SQL database at the bottom labeled SQL database. Arrows connect clients to hosts, hosts to manager, manager to access, and access to the database.](./docs/song_api_architecture_mid.svg)
+## Repository Structure
 
-## Local Setup
+```
+jukebox-data-manager/
+  src/
+    Hosts/
+      Jukebox.DataManager.Grpc/          # gRPC host
+      Jukebox.DataManager.Grpc.Test/     # gRPC host tests (45 tests)
+      Jukebox.DataManager.Rest/          # REST host
+      Jukebox.DataManager.Rest.Test/     # REST host tests (36 tests)
+    Manager/
+      Jukebox.DataManager.Managers/      # Manager implementations
+      Jukebox.DataManager.Contracts/     # Interfaces and contract types
+  charts/
+    jukebox-data-manager/                # Umbrella Helm chart
+      charts/
+        jukebox-data-manager-grpc/       # gRPC sub-chart
+        jukebox-data-manager-rest/       # REST sub-chart
+  docs/                                  # Extended documentation (you are here)
+  Jukebox.DataManager.slnx               # Visual Studio 2026 solution file
+  HELM_DEPLOYMENT.md                     # Kubernetes / Helm deployment guide
+```
 
-To run this project, you will need to do the following:
+---
 
-- Set up a SQL server.
-  - If you are running Docker, you can run this Powershell command to quickly spin one up:
-    ```
-    docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong@Pass123" \
-    -p 1433:1433 --name sql_server \
-    -d mcr.microsoft.com/mssql/server:2022-latest
-    ```
-- Run the Entity Framework migrations to set up the database tables. The EF Core models and contexts live in the `jukebox-data-access` project.
-  - To quickly set this up, navigate to the `jukebox-data-access` directory and run the following command to create the migration:
-    ```
-    dotnet ef migrations add InitialCreate --project src/Jukebox.DataAccess.Migrations/Jukebox.DataAccess.Migrations.csproj --startup-project src/Jukebox.DataAccess.Migrations/Jukebox.DataAccess.Migrations.csproj`
-    ```
-    And then run this command to apply the migration to the database:
-    ```
-    dotnet ef database update --project src/Jukebox.DataAccess.Migrations/Jukebox.DataAccess.Migrations.csproj --startup-project src/Jukebox.DataAccess.Migrations/Jukebox.DataAccess.Migrations.csproj
-    ```
-- Set a new environmental variable called `JUKEBOX_DB_CONNECTION_STRING` using your connection string to your SQL database.
-  - For a quick setup, run this Powershell command:
-  ```
-  [System.Environment]::SetEnvironmentVariable("JUKEBOX_DB_CONNECTION_STRING", "Server=localhost,1433;Database=Jukebox;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;", "User")
-  ```
-- In Visual Studio, run either `Jukebox.DataManager.Grpc` for the gRPC host, or `Jukebox.DataManager.Rest` for the REST host.
+## Quick Start
 
-## Loal Deployment To Kubernetes Via Helm / Docker
+**Prerequisites:** .NET 8.0 SDK, Docker (SQL Server), a running `Jukebox` database.
 
-- Follow the instructions in `HELM_DEPLOYMENT.md`.
+```bash
+# Set required environment variable
+export JUKEBOX_DB_CONNECTION_STRING="Server=localhost,1433;Database=Jukebox;..."
+
+# Run the REST host
+cd src/Hosts/Jukebox.DataManager.Rest
+dotnet run
+
+# Run the gRPC host (separate terminal)
+cd src/Hosts/Jukebox.DataManager.Grpc
+dotnet run
+```
+
+See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) for full setup including Helm/kind, auth configuration, and dev bypass.
+
+---
+
+## Documentation
+
+| Document | Description |
+|---|---|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Project structure, data flow, key design decisions |
+| [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) | Local development setup, running both hosts, dev auth |
+| [docs/API_REFERENCE_REST.md](docs/API_REFERENCE_REST.md) | REST endpoint reference — all routes, auth, request/response |
+| [docs/API_REFERENCE_GRPC.md](docs/API_REFERENCE_GRPC.md) | gRPC service reference — all RPCs, metadata, request/response |
+| [docs/CICD.md](docs/CICD.md) | CircleCI pipeline jobs, branching strategy, image publishing |
+| [AUTHENTICATION.md](AUTHENTICATION.md) | API key and JWT bearer setup, production injection patterns |
+| [HELM_DEPLOYMENT.md](HELM_DEPLOYMENT.md) | Helm chart structure, kind cluster setup, deployment commands |
+
+---
+
+## Technology Stack
+
+| Concern | Choice |
+|---|---|
+| Runtime | .NET 8.0 |
+| REST framework | ASP.NET Core, `Microsoft.AspNetCore.Authentication.JwtBearer` |
+| gRPC framework | `Grpc.AspNetCore` |
+| ORM / data access | EF Core 8 via `jukebox-data-access` packages |
+| Database | SQL Server |
+| Containerization | Docker (multi-stage builds) |
+| Orchestration | Kubernetes via Helm (umbrella chart) |
+| CI/CD | CircleCI |
+| Container registry | GitHub Container Registry (`ghcr.io/jonwong84`) |
+| Code quality | SonarCloud |
+
+---
+
+## Test Coverage
+
+| Project | Tests |
+|---|---|
+| `Jukebox.DataManager.Grpc.Test` | 45 |
+| `Jukebox.DataManager.Rest.Test` | 36 |
+| **Total** | **81** |
+
+Run all tests from the repo root:
+
+```bash
+dotnet test
+```
