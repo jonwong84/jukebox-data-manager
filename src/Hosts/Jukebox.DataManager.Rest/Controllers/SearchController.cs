@@ -3,12 +3,15 @@ using Jukebox.DataManager.Contracts.DataContracts.Search;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
 using Jukebox.DataManager.Managers.Interfaces;
 using Jukebox.DataManager.Rest.Mapping;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Jukebox.DataManager.Rest.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    [Route("api/[controller]")]
     public class SearchController : ControllerBase
     {
         private readonly ISongSearchManager _songSearchManager;
@@ -33,5 +36,8 @@ namespace Jukebox.DataManager.Rest.Controllers
             var actionResult = SongSearchResultsMapper.MapSearchResults(resultsFromManager);
             return actionResult;
         }
+
+        private string GetUserId() =>
+    User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
     }
 }

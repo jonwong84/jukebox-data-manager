@@ -24,8 +24,4 @@
 		<ProjectReference Include="..\..\Manager\Jukebox.DataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Interceptors\" />
-	</ItemGroup>
-
 </Project>

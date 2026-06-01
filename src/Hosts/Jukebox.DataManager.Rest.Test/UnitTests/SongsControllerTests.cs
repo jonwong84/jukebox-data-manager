@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Security.Claims;
 
 namespace Jukebox.DataManager.Rest.Test.UnitTests
 {
@@ -21,9 +22,14 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
             _mockLogger = new Mock<ILogger<SongsController>>();
             _controller = new SongsController(_mockSongManager.Object, _mockLogger.Object);
 
+            var claims = new[] { new Claim("sub", "test-user") };
+            var identity = new ClaimsIdentity(claims, authenticationType: "Test");
             _controller.ControllerContext = new ControllerContext
             {
-                HttpContext = new DefaultHttpContext()
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(identity)
+                }
             };
         }
 

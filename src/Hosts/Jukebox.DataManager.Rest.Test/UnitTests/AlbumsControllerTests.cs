@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace Jukebox.DataManager.Rest.Test.UnitTests
@@ -23,9 +24,14 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
             _mockLogger = new Mock<ILogger<AlbumsController>>();
             _controller = new AlbumsController(_mockAlbumManager.Object, _mockLogger.Object);
 
+            var claims = new[] { new Claim("sub", "test-user") };
+            var identity = new ClaimsIdentity(claims, authenticationType: "Test");
             _controller.ControllerContext = new ControllerContext
             {
-                HttpContext = new DefaultHttpContext()
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(identity)
+                }
             };
         }
 
