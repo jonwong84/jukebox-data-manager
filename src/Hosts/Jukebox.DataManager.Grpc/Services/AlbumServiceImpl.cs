@@ -23,7 +23,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -49,7 +49,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.AddAlbumRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.AddAlbumRequest
             {
                 Title = request.Title,
@@ -74,7 +74,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
         // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = response.Data!.Id
         };
 
@@ -100,7 +100,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.UpdateAlbumRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.UpdateAlbumRequest
             {
                 Id = request.Id,
@@ -134,7 +134,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -151,7 +151,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.ListAlbumsRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.ListAlbumsRequest
             {
                 PageNumber = request.Pagination?.Page ?? 1,
@@ -216,4 +216,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
 
         return details;
     }
+
+    private string GetUserId(ServerCallContext context) =>
+        context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }

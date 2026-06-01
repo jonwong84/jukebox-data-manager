@@ -23,7 +23,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -49,7 +49,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.AddArtistRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.AddArtistRequest
             {
                 Name = request.Name,
@@ -71,7 +71,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
         // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = response.Data!.Id
         };
 
@@ -97,7 +97,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.UpdateArtistRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.UpdateArtistRequest
             {
                 Id = request.Id,
@@ -128,7 +128,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -145,7 +145,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.ListArtistsRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.ListArtistsRequest
             {
                 PageNumber = request.Pagination?.Page ?? 1,
@@ -205,4 +205,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
                 })
             },
         };
+
+    private string GetUserId(ServerCallContext context) =>
+        context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }

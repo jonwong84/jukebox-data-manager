@@ -23,10 +23,6 @@
   </ItemGroup>
 
 <ItemGroup>
-	<Folder Include="IntegrationTests\" />
-</ItemGroup>
-
-<ItemGroup>
   <ProjectReference Include="..\..\Manager\Jukebox.DataManager.Contracts\Jukebox.DataManager.Contracts.csproj" />
   <ProjectReference Include="..\Jukebox.DataManager.Rest\Jukebox.DataManager.Rest.csproj" />
 </ItemGroup>

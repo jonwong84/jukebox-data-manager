@@ -1,9 +1,12 @@
 using Jukebox.DataManager.Contracts.DataContracts.Album;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Managers.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsController> logger) : ControllerBase
 {
@@ -15,7 +18,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
     {
         var request = new ManagerRequest<int>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = id
         };
 
@@ -32,7 +35,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
     {
         var managerRequest = new ManagerRequest<ListAlbumsRequest>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = request
         };
 
@@ -49,7 +52,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
     {
         var managerRequest = new ManagerRequest<AddAlbumRequest>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = request
         };
 
@@ -71,7 +74,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
 
         var managerRequest = new ManagerRequest<UpdateAlbumRequest>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = request
         };
 
@@ -88,7 +91,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
     {
         var request = new ManagerRequest<int>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = id
         };
 
@@ -99,4 +102,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
 
         return NoContent();
     }
+
+    private string GetUserId() =>
+    User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }

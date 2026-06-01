@@ -2,11 +2,15 @@ using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
 using Jukebox.DataManager.Managers;
 using Jukebox.DataManager.Managers.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Jukebox.DataManager.Rest.Controllers;
 
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class SongsController(ISongManager songManager, ILogger<SongsController> logger) : ControllerBase
 {
@@ -30,7 +34,7 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
     {
         var managerRequest = new ManagerRequest<ListSongsRequest>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = request
         };
 
@@ -64,7 +68,7 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
 
         var managerRequest = new ManagerRequest<UpdateSongRequest>
         {
-            UserId = HttpContext.TraceIdentifier,
+            UserId = GetUserId(),
             Data = request
         };
 
@@ -87,4 +91,7 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
         var response = await _songManager.DeleteSongAsync(managerRequest, cancellationToken);
         return response.Success ? NoContent() : BadRequest(response.ErrorMessage);
     }
+
+    private string GetUserId() =>
+    User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }
