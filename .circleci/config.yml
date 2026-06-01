@@ -113,7 +113,8 @@ jobs:
               /d:sonar.pullrequest.base="main" \
               /d:sonar.cs.opencover.reportsPaths="/tmp/workspace/grpc.coverage.opencover.xml,/tmp/workspace/rest.coverage.opencover.xml" \
               /d:sonar.tests="src/Hosts/Jukebox.DataManager.Grpc.Test,src/Hosts/Jukebox.DataManager.Rest.Test" \
-              /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs"
+              /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs" \
+              /d:sonar.exclusions="src/Hosts/Jukebox.DataManager.Grpc/Program.cs,src/Hosts/Jukebox.DataManager.Rest/Program.cs,src/Manager/Jukebox.DataManager.Contracts/DataContracts/**/*.cs,src/Manager/Jukebox.DataManager.Managers/Mapping/AutoMapper/**/*.cs"
       - run:
           name: Build
           command: |
