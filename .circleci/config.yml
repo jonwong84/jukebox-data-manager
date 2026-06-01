@@ -26,11 +26,18 @@ jobs:
               --configuration Release \
               --no-restore
       - run:
-          name: Test
+          name: Test with coverage
           command: |
             dotnet test "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
               --configuration Release \
-              --no-restore
+              --no-restore \
+              /p:CollectCoverage=true \
+              /p:CoverletOutputFormat=opencover \
+              /p:CoverletOutput="/tmp/workspace/grpc.coverage.opencover.xml"
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - grpc.coverage.opencover.xml
 
   build-and-test-rest:
     docker:
@@ -57,17 +64,26 @@ jobs:
               --configuration Release \
               --no-restore
       - run:
-          name: Test
+          name: Test with coverage
           command: |
             dotnet test "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
               --configuration Release \
-              --no-restore
+              --no-restore \
+              /p:CollectCoverage=true \
+              /p:CoverletOutputFormat=opencover \
+              /p:CoverletOutput="/tmp/workspace/rest.coverage.opencover.xml"
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - rest.coverage.opencover.xml
 
   sonar-scan:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Install SonarScanner
           command: |
@@ -81,12 +97,12 @@ jobs:
             dotnet restore "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj"
             dotnet restore "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj"
             dotnet restore "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj"
+            dotnet restore "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj"
       - run:
           name: Begin SonarScan
           command: |
             PR_NUMBER=$(echo "$CIRCLE_PULL_REQUEST" | grep -oE '[0-9]+$')
-            GRPC_COVERAGE="$PWD/src/Hosts/Jukebox.DataManager.Grpc.Test/coverage.opencover.xml"
-            REST_COVERAGE="$PWD/src/Hosts/Jukebox.DataManager.Rest.Test/coverage.opencover.xml"
             dotnet sonarscanner begin \
               /k:"jonwong84_jukebox-data-manager" \
               /o:"jonwong84" \
@@ -95,7 +111,7 @@ jobs:
               /d:sonar.pullrequest.key="$PR_NUMBER" \
               /d:sonar.pullrequest.branch="$CIRCLE_BRANCH" \
               /d:sonar.pullrequest.base="main" \
-              /d:sonar.cs.opencover.reportsPaths="$GRPC_COVERAGE,$REST_COVERAGE" \
+              /d:sonar.cs.opencover.reportsPaths="/tmp/workspace/grpc.coverage.opencover.xml,/tmp/workspace/rest.coverage.opencover.xml" \
               /d:sonar.tests="src/Hosts/Jukebox.DataManager.Grpc.Test,src/Hosts/Jukebox.DataManager.Rest.Test" \
               /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs"
       - run:
@@ -113,26 +129,12 @@ jobs:
             dotnet build "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" \
               --configuration Release \
               --no-restore
-      - run:
-          name: Restore test dependencies
-          command: |
-            dotnet restore "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj"
-            dotnet restore "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj"
-      - run:
-          name: Run tests with coverage
-          command: |
-            dotnet test "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
+            dotnet build "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
               --configuration Release \
-              --no-restore \
-              /p:CollectCoverage=true \
-              /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=./coverage.opencover.xml
-            dotnet test "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
+              --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
               --configuration Release \
-              --no-restore \
-              /p:CollectCoverage=true \
-              /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=./coverage.opencover.xml
+              --no-restore
       - run:
           name: End SonarScan
           command: |
