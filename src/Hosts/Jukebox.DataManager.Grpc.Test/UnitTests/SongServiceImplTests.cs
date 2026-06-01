@@ -39,6 +39,8 @@ public class SongServiceImplTests
             writeHeadersFunc: _ => Task.CompletedTask,
             writeOptionsGetter: () => null,
             writeOptionsSetter: _ => { });
+
+        _callContext.UserState["userId"] = "test-user";
     }
 
     // -------------------------------------------------------------------------

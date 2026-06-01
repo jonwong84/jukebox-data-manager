@@ -25,7 +25,7 @@ public class SongServiceImpl : SongService.SongServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -51,7 +51,7 @@ public class SongServiceImpl : SongService.SongServiceBase
     {
         var managerRequest = new ManagerRequest<AddSongRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new AddSongRequest
             {
                 Title = request.Title,
@@ -79,7 +79,7 @@ public class SongServiceImpl : SongService.SongServiceBase
         // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = response.Data!.Id
         };
 
@@ -105,7 +105,7 @@ public class SongServiceImpl : SongService.SongServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.UpdateSongRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.UpdateSongRequest
             {
                 Id = request.Id,
@@ -142,7 +142,7 @@ public class SongServiceImpl : SongService.SongServiceBase
     {
         var managerRequest = new ManagerRequest<int>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = request.Id
         };
 
@@ -159,7 +159,7 @@ public class SongServiceImpl : SongService.SongServiceBase
     {
         var managerRequest = new ManagerRequest<ManagerContracts.ListSongsRequest>
         {
-            UserId = request.UserId,
+            UserId = GetUserId(context),
             Data = new ManagerContracts.ListSongsRequest
             {
                 PageNumber = request.Pagination?.Page ?? 1,
@@ -254,4 +254,7 @@ public class SongServiceImpl : SongService.SongServiceBase
 
         return details;
     }
+
+    private string GetUserId(ServerCallContext context) =>
+        context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }

@@ -1,10 +1,15 @@
 using Jukebox.DataAccess.Extensions;
+using Jukebox.DataManager.Grpc.Interceptors;
 using Jukebox.DataManager.Grpc.Services;
 using Jukebox.DataManager.Managers.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options =>
+{
+    options.Interceptors.Add<AuthInterceptor>();
+});
+builder.Services.AddSingleton<AuthInterceptor>();
 
 builder.Services.AddDataAccess();
 builder.Services.AddDataManager();
