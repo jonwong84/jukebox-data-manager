@@ -1,6 +1,7 @@
 ﻿using Jukebox.DataManager.Contracts.DataContracts.Album;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Managers.Interfaces;
+using Jukebox.DataManager.Rest.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,14 +16,12 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
     public class AlbumsControllerTests
     {
         private readonly Mock<IAlbumManager> _mockAlbumManager;
-        private readonly Mock<ILogger<AlbumsController>> _mockLogger;
         private readonly AlbumsController _controller;
 
         public AlbumsControllerTests()
         {
             _mockAlbumManager = new Mock<IAlbumManager>();
-            _mockLogger = new Mock<ILogger<AlbumsController>>();
-            _controller = new AlbumsController(_mockAlbumManager.Object, _mockLogger.Object);
+            _controller = new AlbumsController(_mockAlbumManager.Object);
 
             var claims = new[] { new Claim("sub", "test-user") };
             var identity = new ClaimsIdentity(claims, authenticationType: "Test");

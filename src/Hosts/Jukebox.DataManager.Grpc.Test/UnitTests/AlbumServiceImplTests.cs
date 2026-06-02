@@ -18,15 +18,13 @@ namespace Jukebox.DataManager.Grpc.Test;
 public class AlbumServiceImplTests
 {
     private readonly Mock<IAlbumManager> _mockAlbumManager;
-    private readonly Mock<ILogger<AlbumServiceImpl>> _mockLogger;
     private readonly AlbumServiceImpl _sut;
     private readonly ServerCallContext _callContext;
 
     public AlbumServiceImplTests()
     {
         _mockAlbumManager = new Mock<IAlbumManager>();
-        _mockLogger = new Mock<ILogger<AlbumServiceImpl>>();
-        _sut = new AlbumServiceImpl(_mockAlbumManager.Object, _mockLogger.Object);
+        _sut = new AlbumServiceImpl(_mockAlbumManager.Object);
         _callContext = TestServerCallContext.Create(
             method: "TestMethod",
             host: "localhost",

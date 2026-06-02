@@ -18,15 +18,13 @@ namespace Jukebox.DataManager.Grpc.Test;
 public class SongServiceImplTests
 {
     private readonly Mock<ISongManager> _mockSongManager;
-    private readonly Mock<ILogger<SongServiceImpl>> _mockLogger;
     private readonly SongServiceImpl _sut;
     private readonly ServerCallContext _callContext;
 
     public SongServiceImplTests()
     {
         _mockSongManager = new Mock<ISongManager>();
-        _mockLogger = new Mock<ILogger<SongServiceImpl>>();
-        _sut = new SongServiceImpl(_mockSongManager.Object, _mockLogger.Object);
+        _sut = new SongServiceImpl(_mockSongManager.Object);
         _callContext = TestServerCallContext.Create(
             method: "TestMethod",
             host: "localhost",
