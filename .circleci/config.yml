@@ -212,11 +212,11 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build \
+            DOCKER_BUILDKIT=1 docker build \
+              --secret id=github_token,env=GITHUB_TOKEN \
               -f src/Hosts/Jukebox.DataManager.Grpc/Dockerfile \
               -t ghcr.io/jonwong84/jukebox-datamanager-grpc:$IMAGE_TAG \
               -t ghcr.io/jonwong84/jukebox-datamanager-grpc:latest \
-              --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
               .
       - run:
           name: Push Docker image
@@ -244,11 +244,11 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build \
+            DOCKER_BUILDKIT=1 docker build \
+              --secret id=github_token,env=GITHUB_TOKEN \
               -f src/Hosts/Jukebox.DataManager.Rest/Dockerfile \
               -t ghcr.io/jonwong84/jukebox-datamanager-rest:$IMAGE_TAG \
               -t ghcr.io/jonwong84/jukebox-datamanager-rest:latest \
-              --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
               .
       - run:
           name: Push Docker image

@@ -1,6 +1,7 @@
+# syntax=docker/dockerfile:1
+
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG GITHUB_TOKEN
 WORKDIR /src
 
 # Copy solution and project files for layer-cached restore
@@ -13,10 +14,11 @@ COPY src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj src/Host
 COPY src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj src/Hosts/Jukebox.DataManager.Grpc.Test/
 
 # Configure GitHub Packages NuGet source and restore
-RUN dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
+RUN --mount=type=secret,id=github_token \
+    dotnet nuget add source https://nuget.pkg.github.com/jonwong84/index.json \
       --name github \
       --username jonwong84 \
-      --password $GITHUB_TOKEN \
+      --password "$(cat /run/secrets/github_token)" \
       --store-password-in-clear-text \
   && dotnet restore src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj
 
@@ -37,5 +39,7 @@ EXPOSE 80
 EXPOSE 443
 
 ENV ASPNETCORE_ENVIRONMENT=Production
+
+USER app
 
 ENTRYPOINT ["dotnet", "Jukebox.DataManager.Rest.dll"]
