@@ -154,8 +154,6 @@ public sealed class ArtistManager : IArtistManager
             request.UserId, request.RequestTime);
 
         var dalRequest = _mapper.Map<DAL.Artist.ListArtistsRequest>(request.Data);
-        dalRequest.UserId = request.UserId;
-
         var result = await _artistRepositoryAccess.ListAsync(dalRequest, cancellationToken);
 
         if (!result.Success)

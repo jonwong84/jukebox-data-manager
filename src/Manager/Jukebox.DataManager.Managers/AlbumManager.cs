@@ -154,8 +154,6 @@ public sealed class AlbumManager : IAlbumManager
             request.UserId, request.RequestTime);
 
         var dalRequest = _mapper.Map<DAL.Album.ListAlbumsRequest>(request.Data);
-        dalRequest.UserId = request.UserId;
-
         var result = await _albumRepositoryAccess.ListAsync(dalRequest, cancellationToken);
 
         if (!result.Success)

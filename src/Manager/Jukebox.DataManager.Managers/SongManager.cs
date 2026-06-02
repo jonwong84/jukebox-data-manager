@@ -154,8 +154,6 @@ public sealed class SongManager : ISongManager
             request.UserId, request.RequestTime);
 
         var dalRequest = _mapper.Map<DAL.Song.ListSongsRequest>(request.Data);
-        dalRequest.UserId = request.UserId;
-
         var result = await _songRepositoryAccess.ListAsync(dalRequest, cancellationToken);
 
         if (!result.Success)
