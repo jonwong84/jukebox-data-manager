@@ -1,0 +1,24 @@
+jukebox-data-manager-grpc:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/jonwong84/jukebox-datamanager-grpc
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    http2Port: 5037
+    http1AndHttp2Port: 7109
+    nodePort:
+      http2: 30537
+      http1AndHttp2: 30709
+
+jukebox-data-manager-rest:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/jonwong84/jukebox-datamanager-rest
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 5035
+    nodePort: 30535

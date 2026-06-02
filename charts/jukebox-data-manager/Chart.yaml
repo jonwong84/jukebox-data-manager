@@ -1,0 +1,12 @@
+apiVersion: v2
+name: jukebox-data-manager
+description: Umbrella chart for Jukebox Data Manager hosts
+type: application
+version: 0.1.0
+dependencies:
+  - name: jukebox-data-manager-grpc
+    version: 0.1.0
+    repository: "file://charts/jukebox-data-manager-grpc"
+  - name: jukebox-data-manager-rest
+    version: 0.1.0
+    repository: "file://charts/jukebox-data-manager-rest"

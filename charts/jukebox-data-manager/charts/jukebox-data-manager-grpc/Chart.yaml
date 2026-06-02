@@ -1,0 +1,5 @@
+apiVersion: v2
+name: jukebox-data-manager-grpc
+description: Helm chart for Jukebox Data Manager gRPC host
+type: application
+version: 0.1.0

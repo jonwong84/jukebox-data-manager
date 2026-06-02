@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Host/">
+    <Project Path="src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" />
+    <Project Path="src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj" />
+    <Project Path="src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" />
+    <Project Path="src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" />
+  </Folder>
+  <Folder Name="/Manager/">
+    <Project Path="src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" />
+    <Project Path="src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj" />
+    <Project Path="src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" />
+  </Folder>
+  <Folder Name="/Solution Files/">
+    <File Path="CHANGELOG.md" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>

@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+import "Protos/common.proto";
+
+option csharp_namespace = "Jukebox.DataManager.Grpc.Album";
+
+package jukebox.album;
+
+service AlbumService {
+  rpc ListAlbums (ListAlbumsRequest) returns (ListAlbumsResponse);
+  rpc GetAlbum (GetAlbumRequest) returns (GetAlbumResponse);
+  rpc CreateAlbum (CreateAlbumRequest) returns (AlbumResponse);
+  rpc UpdateAlbum (UpdateAlbumRequest) returns (AlbumResponse);
+  rpc DeleteAlbum (DeleteAlbumRequest) returns (jukebox.common.DeleteResponse);
+}
+
+message AlbumDetails {
+  int32 id = 1;
+  string title = 2;
+  repeated jukebox.common.ArtistSummary artists = 3;
+  string release_date = 4;
+  string created_at = 5;
+  bool is_compilation = 6;
+  string description = 7;
+}
+
+message AlbumResponse {
+  bool success = 1;
+  string error_message = 2;
+  AlbumDetails album = 3;
+}
+
+message GetAlbumResponse {
+  bool success = 1;
+  string error_message = 2;
+  AlbumDetails album = 3;
+}
+
+message ListAlbumsRequest {
+  jukebox.common.PaginationRequest pagination = 1;
+  string user_id = 2;
+  optional int32 artist_id = 3;
+  optional int32 genre_id = 4;
+  optional string title_search = 5;
+}
+
+message ListAlbumsResponse {
+  bool success = 1;
+  string error_message = 2;
+  repeated jukebox.common.AlbumSummary albums = 3;
+  jukebox.common.PaginationResponse pagination = 4;
+}
+
+message GetAlbumRequest {
+  int32 id = 1;
+  string user_id = 2;
+}
+
+message CreateAlbumRequest {
+  string user_id = 1;
+  string title = 2;
+  repeated int32 artist_ids = 3;
+  string release_date = 4;
+  bool is_compilation = 5;
+  string description = 6;
+}
+
+message UpdateAlbumRequest {
+  string user_id = 1;
+  int32 id = 2;
+  string title = 3;
+  repeated int32 artist_ids = 4;
+  string release_date = 5;
+  bool is_compilation = 6;
+  string description = 7;
+}
+
+message DeleteAlbumRequest {
+  int32 id = 1;
+  string user_id = 2;
+}

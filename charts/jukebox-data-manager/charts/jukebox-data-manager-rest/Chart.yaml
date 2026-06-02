@@ -1,0 +1,5 @@
+apiVersion: v2
+name: jukebox-data-manager-rest
+description: Helm chart for Jukebox Data Manager REST host
+type: application
+version: 0.1.0
