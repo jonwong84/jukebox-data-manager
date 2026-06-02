@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
+namespace Jukebox.DataManager.Rest.Controllers;
+
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsController> logger) : ControllerBase
+public class AlbumsController(IAlbumManager albumManager) : ControllerBase
 {
     private readonly IAlbumManager _albumManager = albumManager;
-    private readonly ILogger<AlbumsController> _logger = logger;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAlbum(int id, CancellationToken cancellationToken)
@@ -61,9 +62,7 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
         if (!result.Success)
             return BadRequest(result.ErrorMessage);
 
-        return result.Success
-            ? CreatedAtAction(nameof(GetAlbum), new { id = result.Data!.Id }, result.Data)
-            : BadRequest(result.ErrorMessage);
+        return CreatedAtAction(nameof(GetAlbum), new { id = result.Data!.Id }, result.Data);
     }
 
     [HttpPut("{id}")]
@@ -104,5 +103,5 @@ public class AlbumsController(IAlbumManager albumManager, ILogger<AlbumsControll
     }
 
     private string GetUserId() =>
-    User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }

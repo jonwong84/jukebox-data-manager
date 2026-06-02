@@ -8,14 +8,12 @@ using System.Security.Claims;
 
 namespace Jukebox.DataManager.Rest.Controllers;
 
-
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class SongsController(ISongManager songManager, ILogger<SongsController> logger) : ControllerBase
+public class SongsController(ISongManager songManager) : ControllerBase
 {
     private readonly ISongManager _songManager = songManager;
-    private readonly ILogger<SongsController> _logger = logger;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSong(int id, CancellationToken cancellationToken)
@@ -93,5 +91,5 @@ public class SongsController(ISongManager songManager, ILogger<SongsController> 
     }
 
     private string GetUserId() =>
-    User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }

@@ -13,12 +13,10 @@ namespace Jukebox.DataManager.Grpc.Services;
 public class SongServiceImpl : SongService.SongServiceBase
 {
     private readonly ISongManager _songManager;
-    private readonly ILogger<SongServiceImpl> _logger;
 
-    public SongServiceImpl(ISongManager songManager, ILogger<SongServiceImpl> logger)
+    public SongServiceImpl(ISongManager songManager)
     {
         _songManager = songManager;
-        _logger = logger;
     }
 
     public override async Task<GetSongResponse> GetSong(GetSongRequest request, ServerCallContext context)
@@ -76,7 +74,6 @@ public class SongServiceImpl : SongService.SongServiceBase
             };
         }
 
-        // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
             UserId = GetUserId(context),
@@ -216,10 +213,10 @@ public class SongServiceImpl : SongService.SongServiceBase
             },
             DurationTicks = song.Duration.Ticks,
             Genres = { song.Genres.Select(g => new Jukebox.DataManager.Grpc.Common.GenreSummary
-        {
-            Id = g.Id,
-            Name = g.Name,
-        })},
+            {
+                Id = g.Id,
+                Name = g.Name,
+            })},
             Lyrics = song.Lyrics,
         };
 
@@ -235,10 +232,10 @@ public class SongServiceImpl : SongService.SongServiceBase
                 Id = song.Album.Id,
                 Title = song.Album.Title,
                 Artists = { song.Album.Artists.Select(a => new Jukebox.DataManager.Grpc.Common.ArtistSummary
-            {
-                Id = a.Id,
-                Name = a.Name,
-            })},
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                })},
             };
         }
 
@@ -255,6 +252,6 @@ public class SongServiceImpl : SongService.SongServiceBase
         return details;
     }
 
-    private string GetUserId(ServerCallContext context) =>
+    private static string GetUserId(ServerCallContext context) =>
         context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }

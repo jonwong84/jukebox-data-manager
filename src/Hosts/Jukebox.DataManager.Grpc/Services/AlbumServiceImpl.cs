@@ -3,6 +3,7 @@ using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Grpc.Album;
 using Jukebox.DataManager.Grpc.Common;
 using Jukebox.DataManager.Managers.Interfaces;
+using System.Globalization;
 using GrpcAlbum = Jukebox.DataManager.Grpc.Album;
 using ManagerContracts = Jukebox.DataManager.Contracts.DataContracts.Album;
 
@@ -11,12 +12,10 @@ namespace Jukebox.DataManager.Grpc.Services;
 public class AlbumServiceImpl : AlbumService.AlbumServiceBase
 {
     private readonly IAlbumManager _albumManager;
-    private readonly ILogger<AlbumServiceImpl> _logger;
 
-    public AlbumServiceImpl(IAlbumManager albumManager, ILogger<AlbumServiceImpl> logger)
+    public AlbumServiceImpl(IAlbumManager albumManager)
     {
         _albumManager = albumManager;
-        _logger = logger;
     }
 
     public override async Task<GetAlbumResponse> GetAlbum(GetAlbumRequest request, ServerCallContext context)
@@ -54,7 +53,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
             {
                 Title = request.Title,
                 ArtistIds = request.ArtistIds.ToList(),
-                ReleaseDate = request.ReleaseDate == string.Empty ? null : DateTime.Parse(request.ReleaseDate),
+                ReleaseDate = request.ReleaseDate == string.Empty ? null : DateTime.Parse(request.ReleaseDate, CultureInfo.InvariantCulture),
                 IsCompilation = request.IsCompilation,
                 Description = request.Description,
             }
@@ -71,7 +70,6 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
             };
         }
 
-        // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
             UserId = GetUserId(context),
@@ -106,7 +104,7 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
                 Id = request.Id,
                 Title = request.Title,
                 ArtistIds = request.ArtistIds.ToList(),
-                ReleaseDate = request.ReleaseDate == string.Empty ? null : DateTime.Parse(request.ReleaseDate),
+                ReleaseDate = request.ReleaseDate == string.Empty ? null : DateTime.Parse(request.ReleaseDate, CultureInfo.InvariantCulture),
                 IsCompilation = request.IsCompilation,
                 Description = request.Description,
             }
@@ -217,6 +215,6 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
         return details;
     }
 
-    private string GetUserId(ServerCallContext context) =>
+    private static string GetUserId(ServerCallContext context) =>
         context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }

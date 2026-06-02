@@ -7,6 +7,9 @@ public class AuthInterceptor : Interceptor
 {
     private readonly IConfiguration _configuration;
 
+    private const string InvalidApiKeyMessage = "Invalid or missing API key.";
+    private const string UserIdKey = "userId";
+
     public AuthInterceptor(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -38,9 +41,9 @@ public class AuthInterceptor : Interceptor
         UnaryServerMethod<TRequest, TResponse> continuation)
     {
         if (!TryAuthenticate(context, out var userId))
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "Invalid or missing API key."));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, InvalidApiKeyMessage));
 
-        context.UserState["userId"] = userId;
+        context.UserState[UserIdKey] = userId;
         return await continuation(request, context);
     }
 
@@ -50,9 +53,9 @@ public class AuthInterceptor : Interceptor
         ClientStreamingServerMethod<TRequest, TResponse> continuation)
     {
         if (!TryAuthenticate(context, out var userId))
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "Invalid or missing API key."));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, InvalidApiKeyMessage));
 
-        context.UserState["userId"] = userId;
+        context.UserState[UserIdKey] = userId;
         return await continuation(requestStream, context);
     }
 
@@ -63,9 +66,9 @@ public class AuthInterceptor : Interceptor
         ServerStreamingServerMethod<TRequest, TResponse> continuation)
     {
         if (!TryAuthenticate(context, out var userId))
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "Invalid or missing API key."));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, InvalidApiKeyMessage));
 
-        context.UserState["userId"] = userId;
+        context.UserState[UserIdKey] = userId;
         await continuation(request, responseStream, context);
     }
 
@@ -76,9 +79,9 @@ public class AuthInterceptor : Interceptor
         DuplexStreamingServerMethod<TRequest, TResponse> continuation)
     {
         if (!TryAuthenticate(context, out var userId))
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "Invalid or missing API key."));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, InvalidApiKeyMessage));
 
-        context.UserState["userId"] = userId;
+        context.UserState[UserIdKey] = userId;
         await continuation(requestStream, responseStream, context);
     }
 }

@@ -11,12 +11,10 @@ namespace Jukebox.DataManager.Grpc.Services;
 public class ArtistServiceImpl : ArtistService.ArtistServiceBase
 {
     private readonly IArtistManager _artistManager;
-    private readonly ILogger<ArtistServiceImpl> _logger;
 
-    public ArtistServiceImpl(IArtistManager artistManager, ILogger<ArtistServiceImpl> logger)
+    public ArtistServiceImpl(IArtistManager artistManager)
     {
         _artistManager = artistManager;
-        _logger = logger;
     }
 
     public override async Task<GetArtistResponse> GetArtist(GetArtistRequest request, ServerCallContext context)
@@ -68,7 +66,6 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
             };
         }
 
-        // Fetch full details to return in response
         var getRequest = new ManagerRequest<int>
         {
             UserId = GetUserId(context),
@@ -206,6 +203,6 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
             },
         };
 
-    private string GetUserId(ServerCallContext context) =>
+    private static string GetUserId(ServerCallContext context) =>
         context.UserState.TryGetValue("userId", out var uid) ? uid as string ?? string.Empty : string.Empty;
 }
