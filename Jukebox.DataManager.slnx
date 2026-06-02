@@ -6,6 +6,7 @@
     <Project Path="src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" />
   </Folder>
   <Folder Name="/Manager/">
+    <Project Path="Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj" Id="fbbec6dc-fc4c-4595-9ee9-0f905be29a89" />
     <Project Path="src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" />
     <Project Path="src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" />
   </Folder>
