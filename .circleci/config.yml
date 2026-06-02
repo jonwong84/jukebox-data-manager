@@ -25,9 +25,13 @@ jobs:
             dotnet build "src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.csproj" \
               --configuration Release \
               --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
+              --configuration Release \
+              --no-restore
       - run:
           name: Test with coverage
           command: |
+            mkdir -p /tmp/workspace
             dotnet test "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj" \
               --configuration Release \
               --no-restore \
@@ -63,9 +67,13 @@ jobs:
             dotnet build "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj" \
               --configuration Release \
               --no-restore
+            dotnet build "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
+              --configuration Release \
+              --no-restore
       - run:
           name: Test with coverage
           command: |
+            mkdir -p /tmp/workspace
             dotnet test "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
               --configuration Release \
               --no-restore \
@@ -76,6 +84,44 @@ jobs:
           root: /tmp/workspace
           paths:
             - rest.coverage.opencover.xml
+
+  build-and-test-managers:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0
+    steps:
+      - checkout
+      - run:
+          name: Restore dependencies
+          command: |
+            dotnet restore "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj"
+      - run:
+          name: Build
+          command: |
+            dotnet build "src/Manager/Jukebox.DataManager.Contracts/Jukebox.DataManager.Contracts.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers/Jukebox.DataManager.Managers.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj" \
+              --configuration Release \
+              --no-restore
+      - run:
+          name: Test with coverage
+          command: |
+            mkdir -p /tmp/workspace
+            dotnet test "src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj" \
+              --configuration Release \
+              --no-restore \
+              /p:CollectCoverage=true \
+              /p:CoverletOutputFormat=opencover \
+              /p:CoverletOutput="/tmp/workspace/managers.coverage.opencover.xml"
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - managers.coverage.opencover.xml
 
   sonar-scan:
     docker:
@@ -99,6 +145,7 @@ jobs:
             dotnet restore "src/Hosts/Jukebox.DataManager.Rest/Jukebox.DataManager.Rest.csproj"
             dotnet restore "src/Hosts/Jukebox.DataManager.Grpc.Test/Jukebox.DataManager.Grpc.Test.csproj"
             dotnet restore "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj"
+            dotnet restore "src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj"
       - run:
           name: Begin SonarScan
           command: |
@@ -111,9 +158,9 @@ jobs:
               /d:sonar.pullrequest.key="$PR_NUMBER" \
               /d:sonar.pullrequest.branch="$CIRCLE_BRANCH" \
               /d:sonar.pullrequest.base="main" \
-              /d:sonar.cs.opencover.reportsPaths="/tmp/workspace/grpc.coverage.opencover.xml,/tmp/workspace/rest.coverage.opencover.xml" \
-              /d:sonar.tests="src/Hosts/Jukebox.DataManager.Grpc.Test,src/Hosts/Jukebox.DataManager.Rest.Test" \
-              /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs" \
+              /d:sonar.cs.opencover.reportsPaths="/tmp/workspace/grpc.coverage.opencover.xml,/tmp/workspace/rest.coverage.opencover.xml,/tmp/workspace/managers.coverage.opencover.xml" \
+              /d:sonar.tests="src/Hosts/Jukebox.DataManager.Grpc.Test,src/Hosts/Jukebox.DataManager.Rest.Test,src/Manager/Jukebox.DataManager.Managers.Test" \
+              /d:sonar.test.inclusions="src/Hosts/Jukebox.DataManager.Grpc.Test/**/*.cs,src/Hosts/Jukebox.DataManager.Rest.Test/**/*.cs,src/Manager/Jukebox.DataManager.Managers.Test/**/*.cs" \
               /d:sonar.exclusions="src/Hosts/Jukebox.DataManager.Grpc/Program.cs,src/Hosts/Jukebox.DataManager.Rest/Program.cs,src/Manager/Jukebox.DataManager.Contracts/DataContracts/**/*.cs,src/Manager/Jukebox.DataManager.Managers/Mapping/AutoMapper/**/*.cs"
       - run:
           name: Build
@@ -134,6 +181,9 @@ jobs:
               --configuration Release \
               --no-restore
             dotnet build "src/Hosts/Jukebox.DataManager.Rest.Test/Jukebox.DataManager.Rest.Test.csproj" \
+              --configuration Release \
+              --no-restore
+            dotnet build "src/Manager/Jukebox.DataManager.Managers.Test/Jukebox.DataManager.Managers.Test.csproj" \
               --configuration Release \
               --no-restore
       - run:
@@ -223,11 +273,19 @@ workflows:
               only:
                 - main
                 - /^feature\/.*/
+      - build-and-test-managers:
+          context: global-v1
+          filters:
+            branches:
+              only:
+                - main
+                - /^feature\/.*/
       - sonar-scan:
           context: global-v1
           requires:
             - build-and-test-grpc
             - build-and-test-rest
+            - build-and-test-managers
           filters:
             branches:
               only:
@@ -237,6 +295,7 @@ workflows:
           requires:
             - build-and-test-grpc
             - build-and-test-rest
+            - build-and-test-managers
           filters:
             branches:
               only:
@@ -247,6 +306,7 @@ workflows:
           requires:
             - build-and-test-grpc
             - build-and-test-rest
+            - build-and-test-managers
           filters:
             branches:
               only:
