@@ -13,14 +13,12 @@ namespace Jukebox.DataManager.Rest.Test.UnitTests
     public class SongsControllerTests
     {
         private readonly Mock<ISongManager> _mockSongManager;
-        private readonly Mock<ILogger<SongsController>> _mockLogger;
         private readonly SongsController _controller;
 
         public SongsControllerTests()
         {
             _mockSongManager = new Mock<ISongManager>();
-            _mockLogger = new Mock<ILogger<SongsController>>();
-            _controller = new SongsController(_mockSongManager.Object, _mockLogger.Object);
+            _controller = new SongsController(_mockSongManager.Object);
 
             var claims = new[] { new Claim("sub", "test-user") };
             var identity = new ClaimsIdentity(claims, authenticationType: "Test");
