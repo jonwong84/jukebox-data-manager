@@ -7,7 +7,7 @@ Music metadata management layer for the Jukebox platform. Exposes two hosts:
 
 Both hosts sit on top of a shared manager layer (`Jukebox.DataManager.Managers`) and consume the `jukebox-data-access` NuGet packages for all database operations.
 
-Diagram for visual:
+Architectural diagram for visual:
 
 ![Song metadata API architecture diagram showing a layered system: Clients layer with two client boxes labeled rRPC client generated stub consumer and REST client standard HTTP consumer; API hosts layer with rRPC host procedure-based endpoints and REST host resource-based endpoints; Business logic manager layer labeled Manager layer CRUD orchestration, validation, rules; Data logic access layer labeled Access layer Queries, writes, data mapping; and a SQL database at the bottom labeled SQL database. Arrows connect clients to hosts, hosts to manager, manager to access, and access to the database.](./docs/song_api_architecture_mid.svg)
 ---
