@@ -7,6 +7,9 @@ Music metadata management layer for the Jukebox platform. Exposes two hosts:
 
 Both hosts sit on top of a shared manager layer (`Jukebox.DataManager.Managers`) and consume the `jukebox-data-access` NuGet packages for all database operations.
 
+Diagram for visual:
+
+![Song metadata API architecture diagram showing a layered system: Clients layer with two client boxes labeled rRPC client generated stub consumer and REST client standard HTTP consumer; API hosts layer with rRPC host procedure-based endpoints and REST host resource-based endpoints; Business logic manager layer labeled Manager layer CRUD orchestration, validation, rules; Data logic access layer labeled Access layer Queries, writes, data mapping; and a SQL database at the bottom labeled SQL database. Arrows connect clients to hosts, hosts to manager, manager to access, and access to the database.](./docs/song_api_architecture_mid.svg)
 ---
 
 ## Repository Structure
@@ -21,13 +24,14 @@ jukebox-data-manager/
       Jukebox.DataManager.Rest.Test/     # REST host tests (36 tests)
     Manager/
       Jukebox.DataManager.Managers/      # Manager implementations
+      Jukebox.DataManager.Managers.Test/ # Manager tests (34 tests)
       Jukebox.DataManager.Contracts/     # Interfaces and contract types
   charts/
     jukebox-data-manager/                # Umbrella Helm chart
       charts/
         jukebox-data-manager-grpc/       # gRPC sub-chart
         jukebox-data-manager-rest/       # REST sub-chart
-  docs/                                  # Extended documentation (you are here)
+  docs/                                  # Extended documentation (forthcoming)
   Jukebox.DataManager.slnx               # Visual Studio 2026 solution file
   HELM_DEPLOYMENT.md                     # Kubernetes / Helm deployment guide
 ```
@@ -67,6 +71,8 @@ See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) for full setup including Helm/kind, a
 | [AUTHENTICATION.md](AUTHENTICATION.md) | API key and JWT bearer setup, production injection patterns |
 | [HELM_DEPLOYMENT.md](HELM_DEPLOYMENT.md) | Helm chart structure, kind cluster setup, deployment commands |
 
+> Extended docs are forthcoming. `AUTHENTICATION.md` and `HELM_DEPLOYMENT.md` are currently the only complete documents.
+
 ---
 
 ## Technology Stack
@@ -92,7 +98,8 @@ See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) for full setup including Helm/kind, a
 |---|---|
 | `Jukebox.DataManager.Grpc.Test` | 45 |
 | `Jukebox.DataManager.Rest.Test` | 36 |
-| **Total** | **81** |
+| `Jukebox.DataManager.Managers.Test` | 34 |
+| **Total** | **115** |
 
 Run all tests from the repo root:
 
