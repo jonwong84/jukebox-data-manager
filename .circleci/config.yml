@@ -123,6 +123,37 @@ jobs:
           paths:
             - managers.coverage.opencover.xml
 
+  resolve-version:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - run:
+          name: Install changelog-parser
+          command: npm install -g changelog-parser
+      - run:
+          name: Resolve and persist image version
+          command: |
+            BASE_VERSION=$(changelog-parser CHANGELOG.md | \
+              node -e "const d=require('fs').readFileSync('/dev/stdin','utf8'); \
+                const releases=JSON.parse(d).versions.filter(v=>v.version); \
+                console.log(releases[0].version);")
+
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              IMAGE_TAG="$BASE_VERSION"
+            else
+              DATETIME=$(date -u +"%Y%m%d%H%M%S")
+              IMAGE_TAG="${BASE_VERSION}-beta.${DATETIME}"
+            fi
+
+            echo "Resolved tag: $IMAGE_TAG"
+            mkdir -p /tmp/workspace
+            echo "$IMAGE_TAG" > /tmp/workspace/version.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - version.txt
+
   sonar-scan:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -210,17 +241,16 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Log in to GHCR
           command: echo $GITHUB_TOKEN | docker login ghcr.io -u jonwong84 --password-stdin
       - run:
           name: Determine image tag
           command: |
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
-              IMAGE_TAG=$CIRCLE_SHA1
-            else
-              IMAGE_TAG="beta-$CIRCLE_SHA1"
-            fi
+            IMAGE_TAG=$(cat /tmp/workspace/version.txt)
+            echo "IMAGE_TAG=$IMAGE_TAG"
             echo "export IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
       - run:
           name: Build Docker image
@@ -242,17 +272,16 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Log in to GHCR
           command: echo $GITHUB_TOKEN | docker login ghcr.io -u jonwong84 --password-stdin
       - run:
           name: Determine image tag
           command: |
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
-              IMAGE_TAG=$CIRCLE_SHA1
-            else
-              IMAGE_TAG="beta-$CIRCLE_SHA1"
-            fi
+            IMAGE_TAG=$(cat /tmp/workspace/version.txt)
+            echo "IMAGE_TAG=$IMAGE_TAG"
             echo "export IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
       - run:
           name: Build Docker image
@@ -303,7 +332,7 @@ workflows:
             branches:
               only:
                 - /^feature\/.*/
-      - publish-grpc-image:
+      - resolve-version:
           context: global-v1
           requires:
             - build-and-test-grpc
@@ -314,12 +343,19 @@ workflows:
               only:
                 - main
                 - /^feature\/.*/
+      - publish-grpc-image:
+          context: global-v1
+          requires:
+            - resolve-version
+          filters:
+            branches:
+              only:
+                - main
+                - /^feature\/.*/
       - publish-rest-image:
           context: global-v1
           requires:
-            - build-and-test-grpc
-            - build-and-test-rest
-            - build-and-test-managers
+            - resolve-version
           filters:
             branches:
               only:
