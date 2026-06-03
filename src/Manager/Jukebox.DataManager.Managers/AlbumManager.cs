@@ -22,6 +22,22 @@ public sealed class AlbumManager : IAlbumManager
         _logger = logger;
     }
 
+    private static List<string> Validate(AddAlbumRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Title))
+            errors.Add("'Title' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
+    private static List<string> Validate(UpdateAlbumRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Title))
+            errors.Add("'Title' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
     public async Task<ManagerResponse<AlbumDetails>> FindByIdAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("User {UserId} requested album with ID {AlbumId} at {RequestTime}",
@@ -55,6 +71,20 @@ public sealed class AlbumManager : IAlbumManager
         _logger.LogInformation("User {UserId} requested to add album with title {Title} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Title, managerRequest.RequestTime);
 
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for AddAlbumAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<AlbumSummary>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
         managerRequest.Data.UserId = managerRequest.UserId;
         var accessRequest = _mapper.Map<DAL.Album.AddAlbumRequest>(managerRequest.Data);
         var result = await _albumRepositoryAccess.AddAsync(accessRequest, cancellationToken);
@@ -87,6 +117,20 @@ public sealed class AlbumManager : IAlbumManager
     {
         _logger.LogInformation("User {UserId} requested to update album with ID {AlbumId} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Id, managerRequest.RequestTime);
+
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for UpdateAlbumAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<AlbumDetails>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
 
         managerRequest.Data.UserId = managerRequest.UserId;
         var accessRequest = _mapper.Map<DAL.Album.UpdateAlbumRequest>(managerRequest.Data);

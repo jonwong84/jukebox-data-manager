@@ -21,10 +21,40 @@ public sealed class SongManager : ISongManager
         _logger = logger;
     }
 
+    private static List<string> Validate(AddSongRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Title))
+            errors.Add("'Title' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
+    private static List<string> Validate(UpdateSongRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Title))
+            errors.Add("'Title' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
     public async Task<ManagerResponse<SongSummary>> AddSongAsync(ManagerRequest<AddSongRequest> managerRequest, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("User {UserId} requested to add song with title {Title} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Title, managerRequest.RequestTime);
+
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for AddSongAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<SongSummary>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
 
         managerRequest.Data.UserId = managerRequest.UserId;
         var accessRequest = _mapper.Map<DAL.Song.AddSongRequest>(managerRequest.Data);
@@ -118,6 +148,20 @@ public sealed class SongManager : ISongManager
     {
         _logger.LogInformation("User {UserId} requested to update song with ID {SongId} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Id, managerRequest.RequestTime);
+
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for UpdateSongAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<SongDetails>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
 
         managerRequest.Data.UserId = managerRequest.UserId;
 

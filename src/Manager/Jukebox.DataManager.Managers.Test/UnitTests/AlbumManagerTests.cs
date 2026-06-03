@@ -156,6 +156,23 @@ public class AlbumManagerTests
         Assert.Equal("user-99", addRequest.UserId);
     }
 
+    [Fact]
+    public async Task AddAlbumAsync_WhenTitleIsEmpty_ReturnsFailureWithoutCallingRepository()
+    {
+        // Arrange
+        var addRequest = new BLL.Album.AddAlbumRequest { Title = "   " };
+        var request = new ManagerRequest<BLL.Album.AddAlbumRequest> { Data = addRequest, UserId = "user-1" };
+
+        // Act
+        var response = await _sut.AddAlbumAsync(request);
+
+        // Assert
+        Assert.False(response.Success);
+        Assert.NotNull(response.ErrorMessage);
+        Assert.Contains("Title", response.ErrorMessage);
+        _repositoryMock.Verify(r => r.AddAsync(It.IsAny<DAL.Album.AddAlbumRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     // -------------------------------------------------------------------------
     // UpdateAlbumAsync
     // -------------------------------------------------------------------------
@@ -246,6 +263,23 @@ public class AlbumManagerTests
 
         // Assert
         Assert.Equal("user-99", updateRequest.UserId);
+    }
+
+    [Fact]
+    public async Task UpdateAlbumAsync_WhenTitleIsEmpty_ReturnsFailureWithoutCallingRepository()
+    {
+        // Arrange
+        var updateRequest = new BLL.Album.UpdateAlbumRequest { Id = 1, Title = "" };
+        var request = new ManagerRequest<BLL.Album.UpdateAlbumRequest> { Data = updateRequest, UserId = "user-1" };
+
+        // Act
+        var response = await _sut.UpdateAlbumAsync(request);
+
+        // Assert
+        Assert.False(response.Success);
+        Assert.NotNull(response.ErrorMessage);
+        Assert.Contains("Title", response.ErrorMessage);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<DAL.Album.UpdateAlbumRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     // -------------------------------------------------------------------------
