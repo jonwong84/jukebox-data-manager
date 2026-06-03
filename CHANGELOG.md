@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Validation for non-null, empty names and titles
+- Fixed CircleCI issue where SonarScan step fails if a PR is not open for a feature branch
 
 ## [1.0.0] - 2026-06-02
 
