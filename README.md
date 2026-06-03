@@ -96,10 +96,10 @@ See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) for full setup including Helm/kind, a
 
 | Project | Tests |
 |---|---|
-| `Jukebox.DataManager.Grpc.Test` | 45 |
+| `Jukebox.DataManager.Grpc.Test` | 42 |
 | `Jukebox.DataManager.Rest.Test` | 36 |
-| `Jukebox.DataManager.Managers.Test` | 34 |
-| **Total** | **115** |
+| `Jukebox.DataManager.Managers.Test` | 42 |
+| **Total** | **120** |
 
 Run all tests from the repo root:
 

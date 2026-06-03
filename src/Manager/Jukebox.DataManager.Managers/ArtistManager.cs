@@ -22,6 +22,22 @@ public sealed class ArtistManager : IArtistManager
         _logger = logger;
     }
 
+    private static List<string> Validate(AddArtistRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Name))
+            errors.Add("'Name' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
+    private static List<string> Validate(UpdateArtistRequest request)
+    {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Name))
+            errors.Add("'Name' is required and cannot be empty or whitespace.");
+        return errors;
+    }
+
     public async Task<ManagerResponse<ArtistDetails>> FindByIdAsync(ManagerRequest<int> managerRequest, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("User {UserId} requested artist with ID {ArtistId} at {RequestTime}",
@@ -55,6 +71,20 @@ public sealed class ArtistManager : IArtistManager
         _logger.LogInformation("User {UserId} requested to add artist with name {Name} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Name, managerRequest.RequestTime);
 
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for AddArtistAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<ArtistSummary>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
+
         managerRequest.Data.UserId = managerRequest.UserId;
         var accessRequest = _mapper.Map<DAL.Artist.AddArtistRequest>(managerRequest.Data);
         var result = await _artistRepositoryAccess.AddAsync(accessRequest, cancellationToken);
@@ -87,6 +117,20 @@ public sealed class ArtistManager : IArtistManager
     {
         _logger.LogInformation("User {UserId} requested to update artist with ID {ArtistId} at {RequestTime}",
             managerRequest.UserId, managerRequest.Data.Id, managerRequest.RequestTime);
+
+        var errors = Validate(managerRequest.Data);
+        if (errors.Count > 0)
+        {
+            _logger.LogWarning("Validation failed for UpdateArtistAsync. Requested by {UserId}. Errors: {Errors}",
+                managerRequest.UserId, string.Join(" ", errors));
+
+            return new ManagerResponse<ArtistDetails>
+            {
+                Success = false,
+                ErrorMessage = string.Join(" ", errors),
+                ResponseTime = DateTime.UtcNow,
+            };
+        }
 
         managerRequest.Data.UserId = managerRequest.UserId;
         var accessRequest = _mapper.Map<DAL.Artist.UpdateArtistRequest>(managerRequest.Data);

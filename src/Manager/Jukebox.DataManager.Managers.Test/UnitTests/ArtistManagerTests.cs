@@ -156,6 +156,23 @@ public class ArtistManagerTests
         Assert.Equal("user-99", addRequest.UserId);
     }
 
+    [Fact]
+    public async Task AddArtistAsync_WhenNameIsEmpty_ReturnsFailureWithoutCallingRepository()
+    {
+        // Arrange
+        var addRequest = new BLL.Artist.AddArtistRequest { Name = "   " };
+        var request = new ManagerRequest<BLL.Artist.AddArtistRequest> { Data = addRequest, UserId = "user-1" };
+
+        // Act
+        var response = await _sut.AddArtistAsync(request);
+
+        // Assert
+        Assert.False(response.Success);
+        Assert.NotNull(response.ErrorMessage);
+        Assert.Contains("Name", response.ErrorMessage);
+        _repositoryMock.Verify(r => r.AddAsync(It.IsAny<DAL.Artist.AddArtistRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     // -------------------------------------------------------------------------
     // UpdateArtistAsync
     // -------------------------------------------------------------------------
@@ -246,6 +263,23 @@ public class ArtistManagerTests
 
         // Assert
         Assert.Equal("user-99", updateRequest.UserId);
+    }
+
+    [Fact]
+    public async Task UpdateArtistAsync_WhenNameIsEmpty_ReturnsFailureWithoutCallingRepository()
+    {
+        // Arrange
+        var updateRequest = new BLL.Artist.UpdateArtistRequest { Id = 1, Name = "" };
+        var request = new ManagerRequest<BLL.Artist.UpdateArtistRequest> { Data = updateRequest, UserId = "user-1" };
+
+        // Act
+        var response = await _sut.UpdateArtistAsync(request);
+
+        // Assert
+        Assert.False(response.Success);
+        Assert.NotNull(response.ErrorMessage);
+        Assert.Contains("Name", response.ErrorMessage);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<DAL.Artist.UpdateArtistRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     // -------------------------------------------------------------------------
