@@ -149,9 +149,10 @@ jobs:
       - run:
           name: Resolve PR Number
           command: |
-            PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/jonwong84/jukebox-data-manager/pulls?state=open&head=jonwong84:$CIRCLE_BRANCH" \
-              | grep -o '"number": [0-9]*' | head -1 | grep -o '[0-9]*')
+            API_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/jonwong84/jukebox-data-access/pulls?state=open&head=jonwong84:$CIRCLE_BRANCH")
+            PR_NUMBER=$(echo "$API_RESPONSE" \
+              | grep -o '"number": [0-9]*' | head -1 | grep -o '[0-9]*' || true)
             echo "PR_NUMBER=$PR_NUMBER"
             echo "export PR_NUMBER=$PR_NUMBER" >> $BASH_ENV
       - run:
