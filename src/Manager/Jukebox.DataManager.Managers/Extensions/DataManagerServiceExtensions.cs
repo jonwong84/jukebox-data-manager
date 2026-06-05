@@ -13,6 +13,7 @@ public static class DataManagerServiceExtensions
         services.AddScoped<ISongManager, SongManager>();
         services.AddScoped<IArtistManager, ArtistManager>();
         services.AddScoped<IAlbumManager, AlbumManager>();
+        services.AddScoped<IGenreManager, GenreManager>();
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<SongProfile>();

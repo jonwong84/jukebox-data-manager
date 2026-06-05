@@ -2,7 +2,9 @@
 using Grpc.Core;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Contracts.DataContracts.Song;
+using Jukebox.DataManager.Grpc.Artist;
 using Jukebox.DataManager.Grpc.Common;
+using Jukebox.DataManager.Grpc.Genre;
 using Jukebox.DataManager.Grpc.Song;
 using Jukebox.DataManager.Managers.Interfaces;
 using GrpcSong = Jukebox.DataManager.Grpc.Song;
@@ -135,7 +137,7 @@ public class SongServiceImpl : SongService.SongServiceBase
         };
     }
 
-    public override async Task<Common.DeleteResponse> DeleteSong(DeleteSongRequest request, ServerCallContext context)
+    public override async Task<DeleteResponse> DeleteSong(DeleteSongRequest request, ServerCallContext context)
     {
         var managerRequest = new ManagerRequest<int>
         {
@@ -145,14 +147,14 @@ public class SongServiceImpl : SongService.SongServiceBase
 
         var response = await _songManager.DeleteSongAsync(managerRequest, context.CancellationToken);
 
-        return new Jukebox.DataManager.Grpc.Common.DeleteResponse
+        return new DeleteResponse
         {
             Success = response.Success,
             ErrorMessage = response.ErrorMessage ?? string.Empty,
         };
     }
 
-    public override async Task<GrpcSong.ListSongsResponse> ListSongs(GrpcSong.ListSongsRequest request, ServerCallContext context)
+    public override async Task<ListSongsResponse> ListSongs(GrpcSong.ListSongsRequest request, ServerCallContext context)
     {
         var managerRequest = new ManagerRequest<ManagerContracts.ListSongsRequest>
         {
@@ -201,18 +203,18 @@ public class SongServiceImpl : SongService.SongServiceBase
     private static GrpcSong.SongDetails MapToSongDetails(
         ManagerContracts.SongDetails song)
     {
-        var details = new GrpcSong.SongDetails
+        var details = new Song.SongDetails
         {
             Id = song.Id,
             Title = song.Title,
             ArtistId = song.ArtistId,
-            Artist = new Jukebox.DataManager.Grpc.Common.ArtistSummary
+            Artist = new ArtistSummary
             {
                 Id = song.Artist.Id,
                 Name = song.Artist.Name,
             },
             DurationTicks = song.Duration.Ticks,
-            Genres = { song.Genres.Select(g => new Jukebox.DataManager.Grpc.Common.GenreSummary
+            Genres = { song.Genres.Select(g => new GenreSummary
             {
                 Id = g.Id,
                 Name = g.Name,
@@ -227,11 +229,11 @@ public class SongServiceImpl : SongService.SongServiceBase
 
         if (song.Album is not null)
         {
-            details.Album = new Jukebox.DataManager.Grpc.Common.AlbumSummary
+            details.Album = new AlbumSummary
             {
                 Id = song.Album.Id,
                 Title = song.Album.Title,
-                Artists = { song.Album.Artists.Select(a => new Jukebox.DataManager.Grpc.Common.ArtistSummary
+                Artists = { song.Album.Artists.Select(a => new ArtistSummary
                 {
                     Id = a.Id,
                     Name = a.Name,

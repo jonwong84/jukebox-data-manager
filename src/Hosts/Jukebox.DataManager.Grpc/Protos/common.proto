@@ -20,19 +20,3 @@ message DeleteResponse {
   bool success = 1;
   string error_message = 2;
 }
-
-message ArtistSummary {
-  int32 id = 1;
-  string name = 2;
-}
-
-message AlbumSummary {
-  int32 id = 1;
-  string title = 2;
-  repeated ArtistSummary artists = 3;
-}
-
-message GenreSummary {
-  int32 id = 1;
-  string name = 2;
-}

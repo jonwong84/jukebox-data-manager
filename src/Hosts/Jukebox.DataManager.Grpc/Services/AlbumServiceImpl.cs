@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
 using Jukebox.DataManager.Grpc.Album;
+using Jukebox.DataManager.Grpc.Artist;
 using Jukebox.DataManager.Grpc.Common;
 using Jukebox.DataManager.Managers.Interfaces;
 using System.Globalization;
@@ -177,11 +178,11 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
             }
         };
 
-        response.Albums.AddRange(result.Data.Items.Select(a => new Common.AlbumSummary
+        response.Albums.AddRange(result.Data.Items.Select(a => new AlbumSummary
         {
             Id = a.Id,
             Title = a.Title,
-            Artists = { a.Artists.Select(ar => new Common.ArtistSummary { Id = ar.Id, Name = ar.Name }) }
+            Artists = { a.Artists.Select(ar => new Artist.ArtistSummary { Id = ar.Id, Name = ar.Name }) }
         }));
 
         return response;
@@ -194,12 +195,11 @@ public class AlbumServiceImpl : AlbumService.AlbumServiceBase
         {
             Id = album.Id,
             Title = album.Title,
-            CreatedAt = album.CreatedAt.ToString("O"),
             IsCompilation = album.IsCompilation,
             Description = album.Description,
             Artists =
             {
-                album.Artists.Select(a => new Jukebox.DataManager.Grpc.Common.ArtistSummary
+                album.Artists.Select(a => new Artist.ArtistSummary
                 {
                     Id = a.Id,
                     Name = a.Name,

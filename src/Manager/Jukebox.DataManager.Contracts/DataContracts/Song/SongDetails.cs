@@ -1,6 +1,6 @@
 ﻿using Jukebox.DataManager.Contracts.DataContracts.Album;
 using Jukebox.DataManager.Contracts.DataContracts.Artist;
-using Jukebox.DataManager.Contracts.DataContracts.Common;
+using Jukebox.DataManager.Contracts.DataContracts.Genre;
 
 namespace Jukebox.DataManager.Contracts.DataContracts.Song
 {

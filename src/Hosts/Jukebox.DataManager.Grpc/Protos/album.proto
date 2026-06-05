@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "Protos/common.proto";
+import "Protos/artist.proto";
 
 option csharp_namespace = "Jukebox.DataManager.Grpc.Album";
 
@@ -17,11 +18,10 @@ service AlbumService {
 message AlbumDetails {
   int32 id = 1;
   string title = 2;
-  repeated jukebox.common.ArtistSummary artists = 3;
+  repeated jukebox.artist.ArtistSummary artists = 3;
   string release_date = 4;
-  string created_at = 5;
-  bool is_compilation = 6;
-  string description = 7;
+  bool is_compilation = 5;
+  string description = 6;
 }
 
 message AlbumResponse {
@@ -47,7 +47,7 @@ message ListAlbumsRequest {
 message ListAlbumsResponse {
   bool success = 1;
   string error_message = 2;
-  repeated jukebox.common.AlbumSummary albums = 3;
+  repeated jukebox.artist.AlbumSummary albums = 3;
   jukebox.common.PaginationResponse pagination = 4;
 }
 

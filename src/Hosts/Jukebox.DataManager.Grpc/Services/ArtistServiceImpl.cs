@@ -168,7 +168,7 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
             }
         };
 
-        response.Artists.AddRange(result.Data.Items.Select(a => new Common.ArtistSummary
+        response.Artists.AddRange(result.Data.Items.Select(a => new ArtistSummary
         {
             Id = a.Id,
             Name = a.Name
@@ -177,23 +177,22 @@ public class ArtistServiceImpl : ArtistService.ArtistServiceBase
         return response;
     }
 
-    private static GrpcArtist.ArtistDetails MapToArtistDetails(
+    private static ArtistDetails MapToArtistDetails(
         ManagerContracts.ArtistDetails artist) =>
         new()
         {
             Id = artist.Id,
             Name = artist.Name,
             Bio = artist.Bio,
-            CreatedAt = artist.CreatedAt.ToString("O"),
             Albums =
             {
-                artist.Albums.Select(a => new Jukebox.DataManager.Grpc.Common.AlbumSummary
+                artist.Albums.Select(a => new AlbumSummary
                 {
                     Id = a.Id,
                     Title = a.Title,
                     Artists =
                     {
-                        a.Artists.Select(ar => new Jukebox.DataManager.Grpc.Common.ArtistSummary
+                        a.Artists.Select(ar => new ArtistSummary
                         {
                             Id = ar.Id,
                             Name = ar.Name,
