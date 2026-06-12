@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+import "Protos/common.proto";
+
+option csharp_namespace = "Jukebox.DataManager.Grpc.Genre";
+
+package jukebox.genre;
+
+service GenreService {
+  rpc ListGenres (ListGenresRequest) returns (ListGenresResponse);
+  rpc GetGenre (GetGenreRequest) returns (GetGenreResponse);
+  rpc CreateGenre (CreateGenreRequest) returns (GenreResponse);
+  rpc UpdateGenre (UpdateGenreRequest) returns (GenreResponse);
+  rpc DeleteGenre (DeleteGenreRequest) returns (jukebox.common.DeleteResponse);
+}
+
+message GenreSummary {
+  int32 id = 1;
+  string name = 2;
+  optional int32 parent_genre_id = 3;
+}
+
+message GenreDetails {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  optional int32 parent_genre_id = 4;
+  GenreSummary parent_genre = 5;
+  repeated GenreSummary sub_genres = 6;
+}
+
+message GenreResponse {
+  bool success = 1;
+  string error_message = 2;
+  GenreDetails genre = 3;
+}
+
+message GetGenreResponse {
+  bool success = 1;
+  string error_message = 2;
+  GenreDetails genre = 3;
+}
+
+message ListGenresRequest {
+  jukebox.common.PaginationRequest pagination = 1;
+  string user_id = 2;
+  optional string name_search = 3;
+  optional int32 parent_genre_id = 4;
+}
+
+message ListGenresResponse {
+  bool success = 1;
+  string error_message = 2;
+  repeated GenreSummary genres = 3;
+  jukebox.common.PaginationResponse pagination = 4;
+}
+
+message GetGenreRequest {
+  int32 id = 1;
+  string user_id = 2;
+}
+
+message CreateGenreRequest {
+  string user_id = 1;
+  string name = 2;
+  string description = 3;
+  optional int32 parent_genre_id = 4;
+}
+
+message UpdateGenreRequest {
+  string user_id = 1;
+  int32 id = 2;
+  string name = 3;
+  string description = 4;
+  optional int32 parent_genre_id = 5;
+}
+
+message DeleteGenreRequest {
+  int32 id = 1;
+  string user_id = 2;
+}

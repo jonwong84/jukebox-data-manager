@@ -14,12 +14,22 @@ service ArtistService {
   rpc DeleteArtist (DeleteArtistRequest) returns (jukebox.common.DeleteResponse);
 }
 
+message ArtistSummary {
+  int32 id = 1;
+  string name = 2;
+}
+
 message ArtistDetails {
   int32 id = 1;
   string name = 2;
   string bio = 3;
-  string created_at = 4;
-  repeated jukebox.common.AlbumSummary albums = 5;
+  repeated AlbumSummary albums = 4;
+}
+
+message AlbumSummary {
+  int32 id = 1;
+  string title = 2;
+  repeated ArtistSummary artists = 3;
 }
 
 message ArtistResponse {
@@ -43,7 +53,7 @@ message ListArtistsRequest {
 message ListArtistsResponse {
   bool success = 1;
   string error_message = 2;
-  repeated jukebox.common.ArtistSummary artists = 3;
+  repeated ArtistSummary artists = 3;
   jukebox.common.PaginationResponse pagination = 4;
 }
 

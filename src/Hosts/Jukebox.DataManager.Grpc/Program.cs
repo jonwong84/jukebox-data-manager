@@ -17,12 +17,14 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddScoped<ArtistServiceImpl>();
 builder.Services.AddScoped<AlbumServiceImpl>();
 builder.Services.AddScoped<SongServiceImpl>();
+builder.Services.AddScoped<GenreServiceImpl>();
 
 var app = builder.Build();
 
 app.MapGrpcService<SongServiceImpl>();
 app.MapGrpcService<ArtistServiceImpl>();
 app.MapGrpcService<AlbumServiceImpl>();
+app.MapGrpcService<GenreServiceImpl>();
 app.MapGrpcReflectionService();
 
 app.MapGet("/", () => "gRPC endpoint. Use a gRPC client to communicate.");

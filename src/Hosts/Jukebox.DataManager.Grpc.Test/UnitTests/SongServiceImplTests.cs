@@ -1,6 +1,7 @@
 using Grpc.Core;
 using Grpc.Core.Testing;
 using Jukebox.DataManager.Contracts.DataContracts.Common;
+using Jukebox.DataManager.Grpc.Genre;
 using Jukebox.DataManager.Grpc.Services;
 using Jukebox.DataManager.Managers.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -56,7 +57,7 @@ public class SongServiceImplTests
             ArtistId = 10,
             Artist = new BLL.Artist.ArtistSummary { Id = 10, Name = "Test Artist" },
             Duration = TimeSpan.FromSeconds(210),
-            Genres = new List<GenreSummary> { new() { Id = 1, Name = "Rock" } }
+            Genres = new List<BLL.Genre.GenreSummary> { new() { Id = 1, Name = "Rock" } }
         };
 
         _mockSongManager
@@ -278,7 +279,7 @@ public class SongServiceImplTests
             ArtistId = 10,
             Artist = new BLL.Artist.ArtistSummary { Id = 10, Name = "Test Artist" },
             Duration = TimeSpan.FromSeconds(180),
-            Genres = new List<GenreSummary>()
+            Genres = new List<BLL.Genre.GenreSummary>()
         };
 
         _mockSongManager

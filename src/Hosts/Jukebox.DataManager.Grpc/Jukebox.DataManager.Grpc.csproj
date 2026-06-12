@@ -9,13 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.80.0" />
-    <PackageReference Include="Jukebox.DataAccess" Version="1.0.1" />
+    <PackageReference Include="Jukebox.DataAccess" Version="1.1.0" />
   </ItemGroup>
 
     <ItemGroup>
 	    <Protobuf Include="Protos\song.proto" GrpcServices="Server" />
 	    <Protobuf Include="Protos\artist.proto" GrpcServices="Server" />
 	    <Protobuf Include="Protos\album.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\genre.proto" GrpcServices="Server" />
 	    <Protobuf Include="Protos\common.proto" GrpcServices="None" />
     </ItemGroup>
 
