@@ -10,11 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 - Minor update to Readme
 
-## [1.0.2] - 2026-06-03
-
-### Updated
-- CircleCI publishing corrected to generate datetime tag instead of hash
-
 ## [1.1.0] - 2026-06-11
 
 ### Added
