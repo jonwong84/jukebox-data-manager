@@ -26,12 +26,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+          .WithHeaders("Content-Type")
+          .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseMiddleware<DevBypassMiddleware>();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseCors("AllowAngularDev");
 }
 
 app.UseAuthentication();
