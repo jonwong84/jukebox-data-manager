@@ -125,27 +125,16 @@ jobs:
 
   resolve-version:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/python:3.12
     steps:
       - checkout
       - run:
-          name: Install changelog-parser
-          command: npm install -g changelog-parser
+          name: Install jw-cicd-tools
+          command: pip install git+https://github.com/jonwong84/jw-cicd-tools.git@v0.2.0
       - run:
           name: Resolve and persist image version
           command: |
-            BASE_VERSION=$(changelog-parser CHANGELOG.md | \
-              node -e "const d=require('fs').readFileSync('/dev/stdin','utf8'); \
-                const releases=JSON.parse(d).versions.filter(v=>v.version); \
-                console.log(releases[0].version);")
-
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
-              IMAGE_TAG="$BASE_VERSION"
-            else
-              DATETIME=$(date -u +"%Y%m%d%H%M%S")
-              IMAGE_TAG="${BASE_VERSION}-beta.${DATETIME}"
-            fi
-
+            IMAGE_TAG=$(jw_cicd version resolve --changelog CHANGELOG.md --branch "$CIRCLE_BRANCH")
             echo "Resolved tag: $IMAGE_TAG"
             mkdir -p /tmp/workspace
             echo "$IMAGE_TAG" > /tmp/workspace/version.txt
