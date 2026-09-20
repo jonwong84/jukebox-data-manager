@@ -28,6 +28,7 @@ RUN dotnet publish src/Hosts/Jukebox.DataManager.Grpc/Jukebox.DataManager.Grpc.c
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+LABEL org.opencontainers.image.source="https://github.com/jonwong84/jukebox-data-manager"
 WORKDIR /app
 
 COPY --from=build /app/publish ./
