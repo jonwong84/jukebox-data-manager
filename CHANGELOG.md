@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Migrated CI to the trunk-based release flow (jw-cicd-tools v0.4.0): releases are cut automatically on merge to `main`, and branch builds publish `-beta.<timestamp>` images
+
+### Fixed
+- `:latest` image tags are now published only from `main`, so feature branches no longer overwrite them
+- GHCR login uses `printf` instead of `echo` so the token is not interpreted by the shell
+- PR number lookup uses `jw_cicd pr resolve` instead of parsing raw JSON with `grep`
+
 ## [1.2.2] - 2026-09-23
 
 ### Fixed
