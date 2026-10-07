@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-07
+
 ### Changed
 - Migrated CI to the trunk-based release flow (jw-cicd-tools v0.4.0): releases are cut automatically on merge to `main`, and branch builds publish `-beta.<timestamp>` images
 
