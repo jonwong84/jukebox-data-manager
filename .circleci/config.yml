@@ -311,7 +311,8 @@ jobs:
             else
               echo "Push to main failed (main may have moved since the tip check):" >&2
             fi
-            cat push_error.log >&2
+            # Redact the token in case git echoes the remote URL.
+            sed "s|${GITHUB_TOKEN}|***|g" push_error.log >&2
             exit 1
       - persist_to_workspace:
           root: /tmp/workspace

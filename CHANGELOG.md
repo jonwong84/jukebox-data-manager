@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `:latest` image tags are now published only from `main`, so feature branches no longer overwrite them
-- GHCR login uses `printf` instead of `echo` so the token is not interpreted by the shell
+- GHCR login now passes the token with a quoted `printf '%s'` instead of an unquoted `echo`
 - PR number lookup uses `jw_cicd pr resolve` instead of parsing raw JSON with `grep`
 
 ## [1.2.2] - 2026-09-23
